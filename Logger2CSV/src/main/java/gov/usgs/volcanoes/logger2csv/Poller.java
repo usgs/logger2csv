@@ -2,17 +2,14 @@ package gov.usgs.volcanoes.logger2csv;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.concurrent.TimeUnit;
+import java.net.UnknownHostException;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
@@ -22,8 +19,11 @@ public class Poller implements Runnable {
 
 	private final ConfigFile config;
 	
-	public Poller(ConfigFile config) {
+	private final InetAddress address;
+	
+	public Poller(ConfigFile config) throws UnknownHostException {
 		this.config = config;
+		address = InetAddress.getByName(config.getString("address"));
 	}
 
 	public void httpClient() throws ClientProtocolException, IOException {

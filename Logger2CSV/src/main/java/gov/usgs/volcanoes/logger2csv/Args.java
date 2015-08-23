@@ -1,14 +1,10 @@
 package gov.usgs.volcanoes.logger2csv;
 
-import java.util.Date;
-
-import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.SimpleJSAP;
-import com.martiansoftware.jsap.StringParser;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.UnflaggedOption;
 
@@ -23,9 +19,9 @@ import com.martiansoftware.jsap.UnflaggedOption;
  */
 public class Args extends SimpleJSAP {
 
-    public static final String DEFAULT_CONFIG_FILENAME = "pensive.config";
-    public static final String PROGRAM_NAME = "java -jar net.stash.pensive.Pensive";
-    public static final String EXPLANATION = "I am the Pensive server\n";
+    public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
+    public static final String PROGRAM_NAME = "java -jar gov.usgs.volcanes.logger2csv.Logger2csv";
+    public static final String EXPLANATION = "I am the logger2csv server\n";
 
     private static final Parameter[] PARAMETERS = new Parameter[] {
             new Switch("create-config", 'c', "create-config",
@@ -38,8 +34,6 @@ public class Args extends SimpleJSAP {
     public final boolean createConfig;
     public final String configFileName;
     public final boolean verbose;
-    public final Date startTime;
-    public final Date endTime;
 
     public Args(String[] args) throws JSAPException {
         super(PROGRAM_NAME, EXPLANATION, PARAMETERS);
@@ -54,32 +48,5 @@ public class Args extends SimpleJSAP {
         createConfig = config.getBoolean("create-config");
         configFileName = config.getString("config-filename");
         verbose = config.getBoolean("verbose");
-
-        startTime = config.getDate("startTime");
-        endTime = config.getDate("endTime");
-        if (!validateTimes())
-            System.exit(1);
-    }
-
-    private boolean validateTimes() {
-        if (startTime == null && endTime == null)
-            return true;
-
-        if (startTime != null && endTime == null) {
-            System.err.println("endTime argument is missing");
-            return false;
-        }
-
-        if (endTime != null && startTime == null) {
-            System.err.println("startTime argument is missing");
-            return false;
-        }
-
-        if (!endTime.after(startTime)) {
-            System.err.println("startTime must be before endTime");
-            return false;
-        }
-            
-        return true;
     }
 }
