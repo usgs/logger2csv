@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -16,63 +14,76 @@ import org.slf4j.LoggerFactory;
 
 import gov.usgs.util.ConfigFile;
 
+/**
+ * A class to hold configuration and utility methods for a single data logger
+ * 
+ * @author Tom Parker
+ * 
+ *         I waive copyright and related rights in the this work worldwide
+ *         through the CC0 1.0 Universal public domain dedication.
+ *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ */
 public class DataLogger {
-    /** my logger */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
-    
-    private static final String DEFAULT_FILE_PATH_FORMAT = "yyyy/MM";
-    private static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd";
-    private static final String DEFAULT_PATH_ROOT = "data";
-    private static final String TOA5_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
+	public static final String DEFAULT_FILE_PATH_FORMAT = "yyyy/MM";
+	public static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd";
+	public static final String DEFAULT_PATH_ROOT = "data";
+	public static final int DEFAULT_BACKFILL = 2;
+
+	public static final String TOA5_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final int HEADER_COUNT = 4;
 
-    private ConfigFile config;
-    public final String name;
-    private Map<String, Integer> bookmarks;
-    public final int maxAge;
-    public final String pathRoot;
-    public final String address;
-    private final SimpleDateFormat filePathFormat;
-    private final SimpleDateFormat fileSuffixFormat;
-    private final List<String> tables;
-    private final SimpleDateFormat dateFormat;
-    
-    public DataLogger(ConfigFile config) throws IOException {
-        this.config = config;
-        
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        
-        name = config.getString("name");
-        address = config.getString("address");
-        maxAge = Integer.parseInt(config.getString("maxAge"));
-        bookmarks = new HashMap<String, Integer>();
-        pathRoot = config.getString("pathRoot", DEFAULT_PATH_ROOT);
-        String path = config.getString("filePathFormat", DEFAULT_FILE_PATH_FORMAT);
-        String suffix = config.getString("fileSuffixFormat", DEFAULT_FILE_SUFFIX_FORMAT);
-        tables = config.getList("table");
-        
-        // TODO: find a better exception class
-        if (tables == null)
-        	throw new IOException("No tables found for " + name);
-        
-        filePathFormat = new SimpleDateFormat(path);
-        fileSuffixFormat = new SimpleDateFormat(suffix);
-        dateFormat = new SimpleDateFormat(TOA5_DATE_FORMAT);
-        LOGGER.debug("creating logger {}", name);
-    }
-    
-    public void setBookmarks(Map<String, Integer> bookmarks) {
-        this.bookmarks = bookmarks;
-    }
-    
-    public Iterator<String> getTableIterator() {
-    	return tables.iterator();
-    }
+	public final String name;
+	public final int backfill;
+	public final String pathRoot;
+	public final String address;
+	
+	private final SimpleDateFormat filePathFormat;
+	private final SimpleDateFormat fileSuffixFormat;
+	private final List<String> tables;
+	private final SimpleDateFormat dateFormat;
 
-    public Date parseDate(String date) throws ParseException {
-    	return dateFormat.parse(date);
-    }
+	@SuppressWarnings("unused")
+	private ConfigFile config;
+
+	public DataLogger(ConfigFile config) throws IOException {
+		this.config = config;
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
+		name = config.getString("name");
+		if (name == null)
+			throw new IOException("Station name must be specified in Config.");
+		LOGGER.debug("creating logger {}", name);
+
+		address = config.getString("address");
+		if (address == null)
+			throw new IOException("Station address must be specified in Config.");
+
+		backfill = Integer.parseInt(config.getString("backfill"), DEFAULT_BACKFILL);
+		pathRoot = config.getString("pathRoot", DEFAULT_PATH_ROOT);
+
+		tables = config.getList("table");
+		if (tables == null)
+			throw new IOException("No tables found for " + name);
+
+		String path = config.getString("filePathFormat", DEFAULT_FILE_PATH_FORMAT);
+		filePathFormat = new SimpleDateFormat(path);
+
+		String suffix = config.getString("fileSuffixFormat", DEFAULT_FILE_SUFFIX_FORMAT);
+		fileSuffixFormat = new SimpleDateFormat(suffix);
+
+		dateFormat = new SimpleDateFormat(TOA5_DATE_FORMAT);
+	}
+
+	public Iterator<String> getTableIterator() {
+		return tables.iterator();
+	}
+
+	public Date parseDate(String date) throws ParseException {
+		return dateFormat.parse(date);
+	}
+
 	public String getFileName(String table, long timeMs) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(pathRoot);
@@ -85,7 +96,7 @@ public class DataLogger {
 		sb.append("-");
 		sb.append(table);
 		sb.append(fileSuffixFormat.format(timeMs));
-		
+
 		String filename = sb.toString().replace('/', File.separatorChar);
 		return filename;
 	}

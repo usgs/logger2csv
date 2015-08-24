@@ -18,8 +18,17 @@ import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVParser;
 
+/**
+ * A class to read tables from a remote data logger, presenting the data in a
+ * form familiar to the OpenCSV library.
+ * 
+ * @author Tom Parker
+ * 
+ *         I waive copyright and related rights in the this work worldwide
+ *         through the CC0 1.0 Universal public domain dedication.
+ *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ */
 public class WebDataReader {
-	/** my logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
 	private final DataLogger dataLogger;
@@ -30,10 +39,6 @@ public class WebDataReader {
 		this.table = table;
 	}
 
-	public int findLastRecord(String table) {
-		throw new UnsupportedOperationException();
-	}
-
 	public Iterator<String[]> since_record(int record) throws IOException {
 		return getResults("since-record", record);
 	}
@@ -41,7 +46,7 @@ public class WebDataReader {
 	public Iterator<String[]> backFill(int backfillS) throws IOException {
 		return getResults("backfill", backfillS);
 	}
-	
+
 	private Iterator<String[]> getResults(final String mode, final int p1) throws IOException {
 		List<String[]> records = new ArrayList<String[]>();
 
@@ -78,10 +83,8 @@ public class WebDataReader {
 
 			};
 			String responseBody = httpclient.execute(httpget, responseHandler);
-			System.out.println("----------------------------------------");
-			System.out.println(responseBody);
 			CSVParser parser = new CSVParser();
-			for (String line : responseBody.split("\\r?\\n")) 
+			for (String line : responseBody.split("\\r?\\n"))
 				records.add(parser.parseLineMulti(line));
 		} finally {
 			httpclient.close();

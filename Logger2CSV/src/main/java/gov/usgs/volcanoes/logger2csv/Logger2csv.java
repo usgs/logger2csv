@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,20 +19,22 @@ import com.martiansoftware.jsap.JSAPException;
 import gov.usgs.util.ConfigFile;
 
 /**
- * Hello world!
- *
+ * An application to write CSV files from a collection of remote data loggers.
+ * 
+ * @author Tom Parker
+ * 
+ *         I waive copyright and related rights in the this work worldwide
+ *         through the CC0 1.0 Universal public domain dedication.
+ *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 public class Logger2csv {
+	private static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
 	public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 	private static final int DAY_TO_S = 24 * 60 * 60;
 
-	/** my logger */
-	private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
-
-	/** my configuration file */
 	private ConfigFile configFile;
-
 	private List<DataLogger> loggers;
 
 	/**
@@ -55,6 +58,7 @@ public class Logger2csv {
 		for (String station : configFile.getList("station")) {
 			ConfigFile config = configFile.getSubConfig(station, true);
 			config.put("name", station);
+			
 			try {
 				loggers.add(new DataLogger(config));
 			} catch (UnknownHostException e) {
@@ -67,9 +71,9 @@ public class Logger2csv {
 	}
 
 	public static void createConfig() throws IOException {
-
-		InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("logger2csv-example.config");
+		InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(EXAMPLE_CONFIG_FILENAME);
 		FileOutputStream os = new FileOutputStream(DEFAULT_CONFIG_FILENAME);
+		
 		try {
 			byte[] buffer = new byte[1024];
 			int length;
@@ -87,19 +91,19 @@ public class Logger2csv {
 		WebDataReader webReader = new WebDataReader(logger, table);
 		FileDataWriter fileWriter = new FileDataWriter(logger, table);
 		LOGGER.debug("Polling {}.{}", logger.name, table);
-		try {
-			int lastRecord = fileReader.findLastRecord(table);
+			int lastRecord = fileReader.findLastRecord();
 			Iterator<String[]> results;
 			if (lastRecord > 0)
 				results = webReader.since_record(lastRecord);
 			else
-				results = webReader.backFill(logger.maxAge * DAY_TO_S);
-			fileWriter.write(results, lastRecord);
+				results = webReader.backFill(logger.backfill * DAY_TO_S);
+			try {
+				fileWriter.write(results, lastRecord);
+			} catch (ParseException e) {
+				LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
+				return;
+			}
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void pollAll() {
@@ -146,5 +150,4 @@ public class Logger2csv {
 		Logger2csv logger2csv = new Logger2csv(cf);
 		logger2csv.pollAll();
 	}
-
 }
