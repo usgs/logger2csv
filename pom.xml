@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>gov.usgs.volcanoes</groupId>
-  <artifactId>Logger2CSV</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>logger2CSV</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Logger2CSV</name>
@@ -70,15 +70,13 @@
                   <include>freemarker/**</include>
                 </includes>
               </filter>
-            </filters>
-              <artifactSet>
+              <filter>
+                <artifact>commons-logging:commons-logging</artifact>
                 <includes>
-                  <include>gov.usgs.volcanoes:usgs</include>
-                  <include>com.martiansoftware:jsap</include>
-                  <include>org.slf4j:*</include>
-                  <include>org.apache:log4j</include>
+                  <include>**</include>
                 </includes>
-              </artifactSet>
+              </filter>
+            </filters>
             </configuration>
           </execution>
         </executions>
