@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import gov.usgs.util.ConfigFile;
+import gov.usgs.volcanoes.util.configFile.ConfigFile;
+
+
 
 /**
  * An application to write CSV files from a collection of remote data loggers.

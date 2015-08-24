@@ -12,7 +12,7 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.usgs.util.ConfigFile;
+import gov.usgs.volcanoes.util.configFile.ConfigFile;
 
 /**
  * A class to hold configuration and utility methods for a single data logger
