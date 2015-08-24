@@ -32,13 +32,15 @@ import gov.usgs.volcanoes.util.configFile.ConfigFile;
 public class Logger2csv {
 	private static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
 	public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
-
+	public static final int DEFAULT_INTERVAL_M = 60 * 60;
 	private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 	private static final int DAY_TO_S = 24 * 60 * 60;
+	private static final int M_TO_MS = 60 * 1000;
 
 	private ConfigFile configFile;
 	private List<DataLogger> loggers;
-
+	private int interval;
+	
 	/**
 	 * Class constructor
 	 * 
@@ -48,9 +50,10 @@ public class Logger2csv {
 	 * @throws JSONException
 	 */
 	public Logger2csv(ConfigFile configFile) throws JSONException {
+		LOGGER.info("Launching Logger2csv ({})", Logger2csvVersion.VERSION_STRING);
 
 		this.configFile = configFile;
-		LOGGER.info("Launching Logger2csv ({})", Logger2csvVersion.VERSION_STRING);
+		this.interval = configFile.getInt("interval", DEFAULT_INTERVAL_M);
 		loggers = getLoggers();
 	}
 
@@ -108,7 +111,7 @@ public class Logger2csv {
 
 	}
 
-	public void pollAll() {
+	public void pollAllOnce() {
 		for (DataLogger l : loggers) {
 			Iterator<String> it = l.getTableIterator();
 			while (it.hasNext()) {
@@ -120,6 +123,16 @@ public class Logger2csv {
 							"Can't find most recent record for logger {}. Is the file corrutp? I'll skip it this time.",
 							l.name);
 				}
+			}
+		}
+	}
+
+	private void pollAllCountinous() {
+		while(true) {
+			pollAllOnce();
+			try {
+				Thread.sleep(interval * M_TO_MS);
+			} catch (InterruptedException ignore) {
 			}
 		}
 	}
@@ -150,6 +163,9 @@ public class Logger2csv {
 		}
 
 		Logger2csv logger2csv = new Logger2csv(cf);
-		logger2csv.pollAll();
+		if (config.persistent)
+			logger2csv.pollAllCountinous();
+		else
+		logger2csv.pollAllOnce();
 	}
 }
