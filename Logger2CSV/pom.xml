@@ -221,5 +221,10 @@
         	<artifactId>json</artifactId>
         	<version>[20141113,)</version>
         </dependency>
+        <dependency>
+        	<groupId>com.opencsv</groupId>
+        	<artifactId>opencsv</artifactId>
+        	<version>3.5</version>
+        </dependency>
   </dependencies>
 </project>

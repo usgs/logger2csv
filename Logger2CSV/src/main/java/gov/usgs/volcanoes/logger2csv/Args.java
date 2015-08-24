@@ -9,7 +9,7 @@ import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.UnflaggedOption;
 
 /**
- * Argument processor for Pensive
+ * Argument processor for Logger2csv
  * 
  * @author Tom Parker
  * 
