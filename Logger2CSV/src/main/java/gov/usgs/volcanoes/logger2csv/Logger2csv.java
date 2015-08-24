@@ -2,7 +2,6 @@ package gov.usgs.volcanoes.logger2csv;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
@@ -15,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.martiansoftware.jsap.JSAPException;
-import com.opencsv.CSVReader;
 
 import gov.usgs.util.ConfigFile;
 
@@ -27,7 +25,7 @@ public class Logger2csv {
 	public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
 
 	private static final int DAY_TO_S = 24 * 60 * 60;
-	
+
 	/** my logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
@@ -47,10 +45,7 @@ public class Logger2csv {
 	public Logger2csv(ConfigFile configFile) throws JSONException {
 
 		this.configFile = configFile;
-		long now = System.currentTimeMillis();
-		configFile.put("applicationLaunch", "" + now);
 		LOGGER.info("Launching Logger2csv ({})", Logger2csvVersion.VERSION_STRING);
-
 		loggers = getLoggers();
 	}
 
@@ -64,7 +59,7 @@ public class Logger2csv {
 				loggers.add(new DataLogger(config));
 			} catch (UnknownHostException e) {
 				LOGGER.error("Cannot find host \"{}\". I'll skip it this time", config.getString("address"));
-			} catch (Exception e) {
+			} catch (IOException e) {
 				LOGGER.error(e.getMessage());
 			}
 		}
@@ -100,7 +95,7 @@ public class Logger2csv {
 			else
 				results = webReader.backFill(logger.maxAge * DAY_TO_S);
 			fileWriter.write(results, lastRecord);
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -115,7 +110,9 @@ public class Logger2csv {
 				try {
 					poll(l, table);
 				} catch (IOException e) {
-					LOGGER.error("Can't find most recent record for logger {}. Is the file corrutp? I'll skip it this time.", l.name);
+					LOGGER.error(
+							"Can't find most recent record for logger {}. Is the file corrutp? I'll skip it this time.",
+							l.name);
 				}
 			}
 		}
@@ -146,13 +143,7 @@ public class Logger2csv {
 			System.exit(1);
 		}
 
-		Logger2csv logger2csv = null;
-		try {
-			logger2csv = new Logger2csv(cf);
-		} catch (JSONException e) {
-			LOGGER.error("Cannot parse bookmarks file.");
-			System.exit(1);
-		}
+		Logger2csv logger2csv = new Logger2csv(cf);
 		logger2csv.pollAll();
 	}
 

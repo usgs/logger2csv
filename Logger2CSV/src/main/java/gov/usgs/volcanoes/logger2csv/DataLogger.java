@@ -1,6 +1,7 @@
 package gov.usgs.volcanoes.logger2csv;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,7 +38,7 @@ public class DataLogger {
     private final List<String> tables;
     private final SimpleDateFormat dateFormat;
     
-    public DataLogger(ConfigFile config) throws Exception {
+    public DataLogger(ConfigFile config) throws IOException {
         this.config = config;
         
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -53,7 +54,7 @@ public class DataLogger {
         
         // TODO: find a better exception class
         if (tables == null)
-        	throw new Exception("No tables found for " + name);
+        	throw new IOException("No tables found for " + name);
         
         filePathFormat = new SimpleDateFormat(path);
         fileSuffixFormat = new SimpleDateFormat(suffix);
