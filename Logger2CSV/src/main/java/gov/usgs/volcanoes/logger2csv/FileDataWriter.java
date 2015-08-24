@@ -60,7 +60,7 @@ public class FileDataWriter {
 				File file = new File(workingFile);
 				boolean newFile = !file.exists();
 				
-				csvWriter = new CSVWriter(new FileWriter(file, true));
+				csvWriter = new CSVWriter(new FileWriter(file, logger.quoteFields));
 				
 				if (newFile)
 					csvWriter.writeAll(headers, false);

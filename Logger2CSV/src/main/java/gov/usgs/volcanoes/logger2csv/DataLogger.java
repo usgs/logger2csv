@@ -30,7 +30,7 @@ public class DataLogger {
 	public static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd";
 	public static final String DEFAULT_PATH_ROOT = "data";
 	public static final int DEFAULT_BACKFILL = 2;
-
+	public static final boolean DEFAULT_QUOTE_FIELDS = false;
 	public static final String TOA5_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final int HEADER_COUNT = 4;
 
@@ -38,6 +38,7 @@ public class DataLogger {
 	public final int backfill;
 	public final String pathRoot;
 	public final String address;
+	public final boolean quoteFields;
 	
 	private final SimpleDateFormat filePathFormat;
 	private final SimpleDateFormat fileSuffixFormat;
@@ -62,7 +63,7 @@ public class DataLogger {
 
 		backfill = Integer.parseInt(config.getString("backfill"), DEFAULT_BACKFILL);
 		pathRoot = config.getString("pathRoot", DEFAULT_PATH_ROOT);
-
+		quoteFields = config.getBoolean("quoteFields", DEFAULT_QUOTE_FIELDS);
 		tables = config.getList("table");
 		if (tables == null)
 			throw new IOException("No tables found for " + name);
