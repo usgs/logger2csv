@@ -61,7 +61,7 @@ public class DataLogger {
 		if (address == null)
 			throw new IOException("Station address must be specified in Config.");
 
-		backfill = Integer.parseInt(config.getString("backfill"), DEFAULT_BACKFILL);
+		backfill = config.getInt("backfill", DEFAULT_BACKFILL);
 		pathRoot = config.getString("pathRoot", DEFAULT_PATH_ROOT);
 		quoteFields = config.getBoolean("quoteFields", DEFAULT_QUOTE_FIELDS);
 		tables = config.getList("table");

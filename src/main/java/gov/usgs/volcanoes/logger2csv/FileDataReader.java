@@ -33,7 +33,7 @@ public class FileDataReader {
 		this.table = table;
 	}
 
-	public int findLastRecord() throws NumberFormatException, IOException {
+	public int findLastRecord() throws IOException {
 		LOGGER.debug("Finding last record for {}", logger.name);
 		CSVReader reader = null;
 

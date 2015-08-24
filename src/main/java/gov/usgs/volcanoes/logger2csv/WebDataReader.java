@@ -66,8 +66,6 @@ public class WebDataReader {
 			String url = sb.toString();
 			HttpGet httpget = new HttpGet(url);
 
-			System.out.println("Executing request " + httpget.getRequestLine());
-
 			// Create a custom response handler
 			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 

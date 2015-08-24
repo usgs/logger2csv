@@ -57,8 +57,13 @@ public class FileDataWriter {
 					csvWriter.close();
 
 				workingFile = recordFile;
+				boolean newFile = false;
 				File file = new File(workingFile);
-				boolean newFile = !file.exists();
+				if (!file.exists()) {
+				    LOGGER.debug("new file. I'll try to make the direcotries just in case.");
+				    newFile = true;
+				    file.getParentFile().mkdirs();
+				}
 				
 				csvWriter = new CSVWriter(new FileWriter(file, logger.quoteFields));
 				

@@ -50,6 +50,6 @@ public class Args extends SimpleJSAP {
         createConfig = config.getBoolean("create-config");
         configFileName = config.getString("config-filename");
         verbose = config.getBoolean("verbose");
-        persistent = config.getBoolean("daemon");
+        persistent = config.getBoolean("persistent");
     }
 }
