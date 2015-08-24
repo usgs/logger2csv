@@ -31,19 +31,21 @@ import com.opencsv.CSVParser;
 public class WebDataReader {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
-	private final DataLogger dataLogger;
+	private final DataLogger logger;
 	private final String table;
 
 	public WebDataReader(DataLogger logger, String table) {
-		this.dataLogger = logger;
+		this.logger = logger;
 		this.table = table;
 	}
 
 	public Iterator<String[]> since_record(int record) throws IOException {
+	    LOGGER.info("Downloading new records from {}.{}.", logger.name, table);
 		return getResults("since-record", record);
 	}
 
 	public Iterator<String[]> backFill(int backfillS) throws IOException {
+	    LOGGER.info("Downloading all recent records from {}.{}.", logger.name, table);
 		return getResults("backfill", backfillS);
 	}
 
@@ -54,7 +56,7 @@ public class WebDataReader {
 		try {
 			StringBuilder sb = new StringBuilder();
 			sb.append("http://");
-			sb.append(dataLogger.address);
+			sb.append(logger.address);
 			sb.append("/?command=DataQuery&uri=dl:");
 			sb.append(table);
 			sb.append("&mode=");

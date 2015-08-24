@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>gov.usgs.volcanoes</groupId>
-  <artifactId>logger2CSV</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <artifactId>logger2csv</artifactId>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>Logger2CSV</name>

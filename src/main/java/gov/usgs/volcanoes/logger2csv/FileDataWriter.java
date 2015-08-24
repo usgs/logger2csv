@@ -65,15 +65,14 @@ public class FileDataWriter {
 				    file.getParentFile().mkdirs();
 				}
 				
-				csvWriter = new CSVWriter(new FileWriter(file, logger.quoteFields));
-				
+				csvWriter = new CSVWriter(new FileWriter(file, true));
 				if (newFile)
 					csvWriter.writeAll(headers, false);
 				else if (Integer.parseInt(line[1]) == lastRecord)
 					continue;
 			}
 			
-			csvWriter.writeNext(line, false);
+			csvWriter.writeNext(line, logger.quoteFields);
 		}
 		
 		if (csvWriter != null)
