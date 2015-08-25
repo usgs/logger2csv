@@ -1,12 +1,11 @@
 package gov.usgs.volcanoes.logger2csv;
 
 import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
-import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Parameter;
-import com.martiansoftware.jsap.SimpleJSAP;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.UnflaggedOption;
+
+import gov.usgs.volcanoes.util.Args;
 
 /**
  * Argument processor for Logger2csv
@@ -17,7 +16,7 @@ import com.martiansoftware.jsap.UnflaggedOption;
  *         through the CC0 1.0 Universal public domain dedication.
  *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
-public class Args extends SimpleJSAP {
+public class Logger2csvArgs extends Args {
 
     public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
     public static final String PROGRAM_NAME = "java -jar gov.usgs.volcanes.logger2csv.Logger2csv";
@@ -31,22 +30,15 @@ public class Args extends SimpleJSAP {
             new UnflaggedOption("config-filename", JSAP.STRING_PARSER, DEFAULT_CONFIG_FILENAME, JSAP.NOT_REQUIRED,
                     JSAP.NOT_GREEDY, "The config file name.") };
 
-    private JSAPResult config;
     public final boolean createConfig;
     public final String configFileName;
     public final boolean verbose;
     public final boolean persistent;
 
-    public Args(String[] args) throws JSAPException {
+    public Logger2csvArgs(String[] args) {
         super(PROGRAM_NAME, EXPLANATION, PARAMETERS);
         config = parse(args);
-        if (messagePrinted()) {
-            if (!config.getBoolean("help"))
-                System.err.println("Try using the --help flag.");
-
-            System.exit(1);
-        }
-
+        
         createConfig = config.getBoolean("create-config");
         configFileName = config.getString("config-filename");
         verbose = config.getBoolean("verbose");

@@ -1,6 +1,5 @@
 package gov.usgs.volcanoes.logger2csv;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,25 +26,21 @@ import gov.usgs.volcanoes.util.configFile.ConfigFile;
  *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 public class Logger2csv {
-    private static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
-    public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
-    public static final int DEFAULT_INTERVAL_M = 60 * 60;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
-    private static final int DAY_TO_S = 24 * 60 * 60;
+
+    private static final int M_TO_S = 60;
+    private static final int DAY_TO_S = 24 * 60 * M_TO_S;
     private static final int M_TO_MS = 60 * 1000;
+
+    public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
+    public static final int DEFAULT_INTERVAL_M = M_TO_S;
+
+    private static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
     private ConfigFile configFile;
     private List<DataLogger> loggers;
     private int interval;
 
-    /**
-     * Class constructor
-     * 
-     * @param configFile
-     *            my config file
-     * @throws FileNotFoundException
-     * @throws JSONException
-     */
     public Logger2csv(ConfigFile configFile) {
         LOGGER.info("Launching Logger2csv ({})", Logger2csvVersion.VERSION_STRING);
 
@@ -147,13 +142,7 @@ public class Logger2csv {
     }
 
     public static void main(String[] args) {
-        Args config = null;
-        try {
-            config = new Args(args);
-        } catch (JSAPException e1) {
-            System.err.println("Couldn't parse command line. Try using the --help flag.");
-            System.exit(1);
-        }
+        Logger2csvArgs config = new Logger2csvArgs(args);
 
         if (config.createConfig) {
             try {
