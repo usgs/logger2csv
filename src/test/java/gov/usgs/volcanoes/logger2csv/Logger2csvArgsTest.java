@@ -9,7 +9,7 @@ import org.junit.Test;
 import com.martiansoftware.jsap.JSAPException;
 
 
-public class PensiveArgsTest {
+public class Logger2csvArgsTest {
 
     private static final String CONFIG_FILENAME = "test.config";
     
