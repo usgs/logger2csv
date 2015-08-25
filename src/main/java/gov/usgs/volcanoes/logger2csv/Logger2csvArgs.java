@@ -5,7 +5,7 @@ import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.UnflaggedOption;
 
-import gov.usgs.volcanoes.util.Args;
+import gov.usgs.volcanoes.util.args.Args;
 
 /**
  * Argument processor for Logger2csv
