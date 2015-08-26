@@ -17,30 +17,25 @@ import gov.usgs.volcanoes.util.args.Args;
  *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 public class Logger2csvArgs extends Args {
-
+    
+    public static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
     public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
     public static final String PROGRAM_NAME = "java -jar gov.usgs.volcanes.logger2csv.Logger2csv";
     public static final String EXPLANATION = "I am the logger2csv server\n";
 
     private static final Parameter[] PARAMETERS = new Parameter[] {
-            new Switch("create-config", 'c', "create-config",
-                    "Create an example config file in the curent working directory."),
             new Switch("persistent", 'p', "persistent", "Run persistenly, periodically polling loggers."),
-            new Switch("verbose", 'v', "verbose", "Verbose logging."),
-            new UnflaggedOption("config-filename", JSAP.STRING_PARSER, DEFAULT_CONFIG_FILENAME, JSAP.NOT_REQUIRED,
-                    JSAP.NOT_GREEDY, "The config file name.") };
+            new Switch("verbose", 'v', "verbose", "Verbose logging.") 
+            };
 
-    public final boolean createConfig;
-    public final String configFileName;
     public final boolean verbose;
     public final boolean persistent;
 
     public Logger2csvArgs(String[] args) {
         super(PROGRAM_NAME, EXPLANATION, PARAMETERS);
+        addCreateConfig(EXAMPLE_CONFIG_FILENAME, DEFAULT_CONFIG_FILENAME);
         config = parse(args);
         
-        createConfig = config.getBoolean("create-config");
-        configFileName = config.getString("config-filename");
         verbose = config.getBoolean("verbose");
         persistent = config.getBoolean("persistent");
     }

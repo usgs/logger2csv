@@ -1,8 +1,6 @@
 package gov.usgs.volcanoes.logger2csv;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -11,8 +9,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.martiansoftware.jsap.JSAPException;
 
 import gov.usgs.volcanoes.util.configFile.ConfigFile;
 
@@ -65,22 +61,6 @@ public class Logger2csv {
             }
         }
         return loggers;
-    }
-
-    public static void createConfig() throws IOException {
-        InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(EXAMPLE_CONFIG_FILENAME);
-        FileOutputStream os = new FileOutputStream(DEFAULT_CONFIG_FILENAME);
-
-        try {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = is.read(buffer)) > 0) {
-                os.write(buffer, 0, length);
-            }
-        } finally {
-            is.close();
-            os.close();
-        }
     }
 
     public void poll(DataLogger logger, String table) {
@@ -143,16 +123,6 @@ public class Logger2csv {
 
     public static void main(String[] args) {
         Logger2csvArgs config = new Logger2csvArgs(args);
-
-        if (config.createConfig) {
-            try {
-                LOGGER.warn("Creating example config " + DEFAULT_CONFIG_FILENAME);
-                Logger2csv.createConfig();
-            } catch (IOException e) {
-                LOGGER.warn("Cannot write example config. " + e.getLocalizedMessage());
-            }
-            System.exit(0);
-        }
 
         ConfigFile cf = new ConfigFile(config.configFileName);
         if (!cf.wasSuccessfullyRead()) {
