@@ -13,6 +13,7 @@ import gov.usgs.volcanoes.util.args.Args;
 import gov.usgs.volcanoes.util.args.Arguments;
 import gov.usgs.volcanoes.util.args.decorator.ConfigFileArg;
 import gov.usgs.volcanoes.util.args.decorator.CreateConfigArg;
+import gov.usgs.volcanoes.util.args.decorator.VerboseArg;
 
 /**
  * Argument processor for Logger2csv
@@ -28,9 +29,9 @@ public class Logger2csvArgs {
 
 	public static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
 	public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
+
 	public static final String PROGRAM_NAME = "java -jar gov.usgs.volcanes.logger2csv.Logger2csv";
 	public static final String EXPLANATION = "I am the logger2csv server\n";
-
 	private static final Parameter[] PARAMETERS = new Parameter[] {
 			new Switch("persistent", 'p', "persistent", "Run persistenly, periodically polling loggers."), };
 
@@ -38,10 +39,12 @@ public class Logger2csvArgs {
 	public final String configFileName;
 
 	public Logger2csvArgs(String[] commandLineArgs) {
-		Arguments args = new Args(PROGRAM_NAME, EXPLANATION, PARAMETERS);
+		Arguments args = null;
 		try {
+			args = new Args(PROGRAM_NAME, EXPLANATION, PARAMETERS);
 			args = new ConfigFileArg(DEFAULT_CONFIG_FILENAME, args);
 			args = new CreateConfigArg(EXAMPLE_CONFIG_FILENAME, args);
+			args = new VerboseArg(args);
 		} catch (JSAPException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -50,7 +53,7 @@ public class Logger2csvArgs {
 		JSAPResult jsapResult = null;
 		try {
 			jsapResult = args.parse(commandLineArgs);
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			LOGGER.error("Cannot parse command line.");
 			System.exit(1);
 		}
@@ -60,5 +63,8 @@ public class Logger2csvArgs {
 
         configFileName = jsapResult.getString("config-filename");
         LOGGER.debug("Setting: configFileName={}", configFileName);
+        
+        if (jsapResult.getBoolean("create-config"))
+        	System.exit(1);
 	}
 }
