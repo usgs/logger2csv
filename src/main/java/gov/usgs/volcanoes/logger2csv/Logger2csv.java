@@ -31,7 +31,6 @@ public class Logger2csv {
     public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
     public static final long DEFAULT_INTERVAL_M = M_TO_S;
 
-    private static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
     private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
     private ConfigFile configFile;
@@ -130,18 +129,18 @@ public class Logger2csv {
             LOGGER.error("Cannot parse command line. (" + e.getLocalizedMessage() + ")");
         }
 
-        ConfigFile cf = null;
-        try {
-            cf = new ConfigFile(config.configFileName);
-        } catch (FileNotFoundException e) {
-            LOGGER.warn("Can't parse config file " + config.configFileName + ". Try using the --help flag.");
-            System.exit(1);
+        if (config != null) {
+            try {
+                ConfigFile cf = new ConfigFile(config.configFileName);
+                Logger2csv logger2csv = new Logger2csv(cf);
+                if (config.persistent)
+                    logger2csv.pollAllCountinous();
+                else
+                    logger2csv.pollAllOnce();
+            } catch (FileNotFoundException e) {
+                LOGGER.warn("Can't parse config file " + config.configFileName + ". Try using the --help flag.");
+            }
         }
 
-        Logger2csv logger2csv = new Logger2csv(cf);
-        if (config.persistent)
-            logger2csv.pollAllCountinous();
-        else
-            logger2csv.pollAllOnce();
     }
 }
