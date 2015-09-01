@@ -105,7 +105,7 @@
 <th>Missing Classes</th></tr>
 <tr class="b">
 <td>8</td>
-<td>8</td>
+<td>2</td>
 <td>0</td>
 <td>0</td></tr></table></div>
 <div class="section">
@@ -115,112 +115,40 @@
 <th>Class</th>
 <th>Bugs</th></tr>
 <tr class="b">
-<td><a href="#gov.usgs.volcanoes.logger2csv.DataLogger">gov.usgs.volcanoes.logger2csv.DataLogger</a></td>
-<td>1</td></tr>
-<tr class="a">
-<td><a href="#gov.usgs.volcanoes.logger2csv.FileDataReader">gov.usgs.volcanoes.logger2csv.FileDataReader</a></td>
-<td>2</td></tr>
-<tr class="b">
-<td><a href="#gov.usgs.volcanoes.logger2csv.FileDataWriter">gov.usgs.volcanoes.logger2csv.FileDataWriter</a></td>
-<td>2</td></tr>
-<tr class="a">
 <td><a href="#gov.usgs.volcanoes.logger2csv.Logger2csv">gov.usgs.volcanoes.logger2csv.Logger2csv</a></td>
 <td>1</td></tr>
-<tr class="b">
+<tr class="a">
 <td><a href="#gov.usgs.volcanoes.logger2csv.Logger2csvArgs">gov.usgs.volcanoes.logger2csv.Logger2csvArgs</a></td>
-<td>2</td></tr></table></div><a name="gov.usgs.volcanoes.logger2csv.DataLogger"></a>
-<div class="section">
-<h3>gov.usgs.volcanoes.logger2csv.DataLogger<a name="gov.usgs.volcanoes.logger2csv.DataLogger"></a></h3>
-<table border="0" class="bodyTable">
-<tr class="a">
-<th>Bug</th>
-<th>Category</th>
-<th>Details</th>
-<th>Line</th>
-<th>Priority</th></tr>
-<tr class="b">
-<td>Unread field: gov.usgs.volcanoes.logger2csv.DataLogger.config</td>
-<td>PERFORMANCE</td>
-<td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#URF_UNREAD_FIELD">URF_UNREAD_FIELD</a></td>
-<td><a href="./xref/gov/usgs/volcanoes/logger2csv/DataLogger.html#L52">52</a></td>
-<td>Medium</td></tr></table></div><a name="gov.usgs.volcanoes.logger2csv.FileDataReader"></a>
-<div class="section">
-<h3>gov.usgs.volcanoes.logger2csv.FileDataReader<a name="gov.usgs.volcanoes.logger2csv.FileDataReader"></a></h3>
-<table border="0" class="bodyTable">
-<tr class="a">
-<th>Bug</th>
-<th>Category</th>
-<th>Details</th>
-<th>Line</th>
-<th>Priority</th></tr>
-<tr class="b">
-<td>Found reliance on default encoding in gov.usgs.volcanoes.logger2csv.FileDataReader.findLastRecord(): new java.io.FileReader(String)</td>
-<td>I18N</td>
-<td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING</a></td>
-<td><a href="./xref/gov/usgs/volcanoes/logger2csv/FileDataReader.html#L47">47</a></td>
-<td>High</td></tr>
-<tr class="a">
-<td>Result of integer multiplication cast to long in gov.usgs.volcanoes.logger2csv.FileDataReader.findLastRecord()</td>
-<td>STYLE</td>
-<td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#ICAST_INTEGER_MULTIPLY_CAST_TO_LONG">ICAST_INTEGER_MULTIPLY_CAST_TO_LONG</a></td>
-<td><a href="./xref/gov/usgs/volcanoes/logger2csv/FileDataReader.html#L42">42</a></td>
-<td>High</td></tr></table></div><a name="gov.usgs.volcanoes.logger2csv.FileDataWriter"></a>
-<div class="section">
-<h3>gov.usgs.volcanoes.logger2csv.FileDataWriter<a name="gov.usgs.volcanoes.logger2csv.FileDataWriter"></a></h3>
-<table border="0" class="bodyTable">
-<tr class="b">
-<th>Bug</th>
-<th>Category</th>
-<th>Details</th>
-<th>Line</th>
-<th>Priority</th></tr>
-<tr class="a">
-<td>Found reliance on default encoding in gov.usgs.volcanoes.logger2csv.FileDataWriter.write(Iterator, int): new java.io.FileWriter(File, boolean)</td>
-<td>I18N</td>
-<td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING</a></td>
-<td><a href="./xref/gov/usgs/volcanoes/logger2csv/FileDataWriter.html#L68">68</a></td>
-<td>High</td></tr>
-<tr class="b">
-<td>Exceptional return value of java.io.File.mkdirs() ignored in gov.usgs.volcanoes.logger2csv.FileDataWriter.write(Iterator, int)</td>
-<td>BAD_PRACTICE</td>
-<td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_BAD_PRACTICE">RV_RETURN_VALUE_IGNORED_BAD_PRACTICE</a></td>
-<td><a href="./xref/gov/usgs/volcanoes/logger2csv/FileDataWriter.html#L65">65</a></td>
-<td>Medium</td></tr></table></div><a name="gov.usgs.volcanoes.logger2csv.Logger2csv"></a>
+<td>1</td></tr></table></div><a name="gov.usgs.volcanoes.logger2csv.Logger2csv"></a>
 <div class="section">
 <h3>gov.usgs.volcanoes.logger2csv.Logger2csv<a name="gov.usgs.volcanoes.logger2csv.Logger2csv"></a></h3>
 <table border="0" class="bodyTable">
-<tr class="a">
+<tr class="b">
 <th>Bug</th>
 <th>Category</th>
 <th>Details</th>
 <th>Line</th>
 <th>Priority</th></tr>
-<tr class="b">
-<td>Result of integer multiplication cast to long in gov.usgs.volcanoes.logger2csv.Logger2csv.pollAllCountinous()</td>
-<td>STYLE</td>
-<td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#ICAST_INTEGER_MULTIPLY_CAST_TO_LONG">ICAST_INTEGER_MULTIPLY_CAST_TO_LONG</a></td>
-<td><a href="./xref/gov/usgs/volcanoes/logger2csv/Logger2csv.html#L119">119</a></td>
+<tr class="a">
+<td>Possible null pointer dereference of config in gov.usgs.volcanoes.logger2csv.Logger2csv.main(String[]) on exception path</td>
+<td>CORRECTNESS</td>
+<td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_NULL_ON_SOME_PATH_EXCEPTION">NP_NULL_ON_SOME_PATH_EXCEPTION</a></td>
+<td><a href="./xref/gov/usgs/volcanoes/logger2csv/Logger2csv.html#L135">135</a></td>
 <td>Medium</td></tr></table></div><a name="gov.usgs.volcanoes.logger2csv.Logger2csvArgs"></a>
 <div class="section">
 <h3>gov.usgs.volcanoes.logger2csv.Logger2csvArgs<a name="gov.usgs.volcanoes.logger2csv.Logger2csvArgs"></a></h3>
 <table border="0" class="bodyTable">
-<tr class="a">
+<tr class="b">
 <th>Bug</th>
 <th>Category</th>
 <th>Details</th>
 <th>Line</th>
 <th>Priority</th></tr>
-<tr class="b">
+<tr class="a">
 <td>new gov.usgs.volcanoes.logger2csv.Logger2csvArgs(String[]) invokes System.exit(...), which shuts down the entire virtual machine</td>
 <td>BAD_PRACTICE</td>
 <td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_EXIT">DM_EXIT</a></td>
-<td><a href="./xref/gov/usgs/volcanoes/logger2csv/Logger2csvArgs.html#L58">58</a></td>
-<td>Medium</td></tr>
-<tr class="a">
-<td>Possible null pointer dereference of args in new gov.usgs.volcanoes.logger2csv.Logger2csvArgs(String[]) on exception path</td>
-<td>CORRECTNESS</td>
-<td><a class="externalLink" href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_NULL_ON_SOME_PATH_EXCEPTION">NP_NULL_ON_SOME_PATH_EXCEPTION</a></td>
-<td><a href="./xref/gov/usgs/volcanoes/logger2csv/Logger2csvArgs.html#L55">55</a></td>
+<td><a href="./xref/gov/usgs/volcanoes/logger2csv/Logger2csvArgs.html#L56">56</a></td>
 <td>Medium</td></tr></table></div>
       </div>
     </div>
