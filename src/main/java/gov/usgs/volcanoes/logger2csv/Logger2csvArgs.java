@@ -38,25 +38,13 @@ public class Logger2csvArgs {
 	public final boolean persistent;
 	public final String configFileName;
 
-	public Logger2csvArgs(String[] commandLineArgs) {
-		Arguments args = null;
-		try {
-			args = new Args(PROGRAM_NAME, EXPLANATION, PARAMETERS);
+	public Logger2csvArgs(String[] commandLineArgs) throws Exception {
+			Arguments args = new Args(PROGRAM_NAME, EXPLANATION, PARAMETERS);
 			args = new ConfigFileArg(DEFAULT_CONFIG_FILENAME, args);
 			args = new CreateConfigArg(EXAMPLE_CONFIG_FILENAME, args);
 			args = new VerboseArg(args);
-		} catch (JSAPException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
-		JSAPResult jsapResult = null;
-		try {
-			jsapResult = args.parse(commandLineArgs);
-		} catch (Exception e) {
-			LOGGER.error("Cannot parse command line.");
-			System.exit(1);
-		}
+			JSAPResult jsapResult = args.parse(commandLineArgs);
 
 		persistent = jsapResult.getBoolean("persistent");
         LOGGER.debug("Setting: persistent={}", persistent);

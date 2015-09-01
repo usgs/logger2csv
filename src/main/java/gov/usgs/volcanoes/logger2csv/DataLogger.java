@@ -45,11 +45,7 @@ public class DataLogger {
 	private final List<String> tables;
 	private final SimpleDateFormat dateFormat;
 
-	@SuppressWarnings("unused")
-	private ConfigFile config;
-
 	public DataLogger(ConfigFile config) throws IOException {
-		this.config = config;
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
 		name = config.getString("name");

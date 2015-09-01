@@ -19,7 +19,7 @@ public class Logger2csvArgsTest {
     private Logger2csvArgs args;
     
     @Before
-    public void setup() throws JSAPException {
+    public void setup() throws Exception {
         args = new Logger2csvArgs(commandLineArgs);
     }
     

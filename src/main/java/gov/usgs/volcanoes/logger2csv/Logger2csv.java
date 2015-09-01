@@ -24,12 +24,12 @@ import gov.usgs.volcanoes.util.configFile.ConfigFile;
  */
 public class Logger2csv {
 
-    private static final int M_TO_S = 60;
-    private static final int DAY_TO_S = 24 * 60 * M_TO_S;
-    private static final int M_TO_MS = 60 * 1000;
+    private static final long M_TO_S = 60;
+    private static final long DAY_TO_S = 24 * 60 * M_TO_S;
+    private static final long M_TO_MS = 60 * 1000;
 
     public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
-    public static final int DEFAULT_INTERVAL_M = M_TO_S;
+    public static final long DEFAULT_INTERVAL_M = M_TO_S;
 
     private static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
     private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
@@ -42,7 +42,7 @@ public class Logger2csv {
         LOGGER.info("Launching Logger2csv ({})", Logger2csvVersion.VERSION_STRING);
 
         this.configFile = configFile;
-        this.interval = configFile.getInt("interval", DEFAULT_INTERVAL_M);
+        this.interval = configFile.getInt("interval", (int) DEFAULT_INTERVAL_M);
         loggers = getLoggers();
     }
 
@@ -84,7 +84,7 @@ public class Logger2csv {
             if (lastRecord > 0)
                 results = webReader.since_record(lastRecord);
             else
-                results = webReader.backFill(logger.backfill * DAY_TO_S);
+                results = webReader.backFill((int) (logger.backfill * DAY_TO_S));
         } catch (IOException e) {
             LOGGER.error("Cannot read new records from {}.{}, I'll skip it this time.", logger.name, table);
             return;
@@ -123,7 +123,12 @@ public class Logger2csv {
     }
 
     public static void main(String[] args) {
-        Logger2csvArgs config = new Logger2csvArgs(args);
+        Logger2csvArgs config = null;
+        try {
+            config = new Logger2csvArgs(args);
+        } catch (Exception e) {
+            LOGGER.error("Cannot parse command line. (" + e.getLocalizedMessage() + ")");
+        }
 
         ConfigFile cf = null;
         try {
