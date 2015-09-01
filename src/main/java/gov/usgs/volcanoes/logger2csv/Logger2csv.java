@@ -1,5 +1,6 @@
 package gov.usgs.volcanoes.logger2csv;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -124,8 +125,10 @@ public class Logger2csv {
     public static void main(String[] args) {
         Logger2csvArgs config = new Logger2csvArgs(args);
 
-        ConfigFile cf = new ConfigFile(config.configFileName);
-        if (!cf.wasSuccessfullyRead()) {
+        ConfigFile cf = null;
+        try {
+            cf = new ConfigFile(config.configFileName);
+        } catch (FileNotFoundException e) {
             LOGGER.warn("Can't parse config file " + config.configFileName + ". Try using the --help flag.");
             System.exit(1);
         }
