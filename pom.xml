@@ -118,6 +118,11 @@
 			<name>Volcanoes website</name>
 			<url>scpexe://vulcan4.wr.usgs.gov/webdata/volcanoes.usgs.gov/htdocs/software/maven2</url>
 		</repository>
+		<site>
+			<id>github.pages</id>
+			<url>scm:git:https://git@github.com/usgs/logger2csv.git</url>
+		</site>
+
 	</distributionManagement>
 
 	<build>
@@ -141,13 +146,6 @@
 				<version>3.2.0</version>
 				<configuration>
 					<repoToken>${env.coveralls_repo_token}</repoToken>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<configuration>
-					<skipDeploy>true</skipDeploy>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -252,6 +250,34 @@
 					<repoToken>${env.coveralls_repo_token}</repoToken>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.wagon</groupId>
+						<artifactId>wagon-scm</artifactId>
+						<version>2.9</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-manager-plexus</artifactId>
+						<version>1.9.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-provider-gitexe</artifactId>
+						<version>1.9.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-api</artifactId>
+						<version>1.9.4</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
 		</plugins>
 
 		<!-- Make m2e happy -->
@@ -282,14 +308,6 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<configuration>
-						<skipDeploy>true</skipDeploy>
-					</configuration>
-				</plugin>
-
 			</plugins>
 		</pluginManagement>
 
