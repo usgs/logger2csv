@@ -1,8 +1,10 @@
 package gov.usgs.volcanoes.logger2csv;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,7 @@ public class FileDataReader {
 
 	public static final String FILE_EXTENSION = ".csv";
 
-	private static final int DAY_TO_MS = 24 * 60 * 60 * 1000;
+	private static final long DAY_TO_MS = 24 * 60 * 60 * 1000;
 	
 	private final DataLogger logger;
 	private final String table;
@@ -44,7 +46,7 @@ public class FileDataReader {
 			String fileName = logger.getFileName(table, timeMs) + FILE_EXTENSION;
 			LOGGER.debug("looking for {}", fileName);
 			try {
-				FileReader fr = new FileReader(fileName);
+			    Reader fr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
 				reader = new CSVReader(fr);
 				lr = -1;
 				String[] nextLine;

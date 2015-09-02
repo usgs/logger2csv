@@ -1,8 +1,10 @@
 package gov.usgs.volcanoes.logger2csv;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,12 +62,19 @@ public class FileDataWriter {
 				boolean newFile = false;
 				File file = new File(workingFile);
 				if (!file.exists()) {
-				    LOGGER.debug("new file. I'll try to make the direcotries just in case.");
+				    LOGGER.debug("Creating new file.");
 				    newFile = true;
-				    file.getParentFile().mkdirs();
+				    File parent = file.getParentFile();
+				    if (!parent.exists()) {
+				        LOGGER.debug("Creating new directory.");
+				        boolean result = file.getParentFile().mkdirs();
+				        if (!result)
+				            throw new IOException("Couldn't create directory: " + parent);
+				    }
 				}
 				
-				csvWriter = new CSVWriter(new FileWriter(file, true));
+				Writer w = new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8");
+				csvWriter = new CSVWriter(w);
 				if (newFile)
 					csvWriter.writeAll(headers, false);
 				else if (Integer.parseInt(line[1]) == lastRecord)
