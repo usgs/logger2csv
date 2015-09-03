@@ -69,7 +69,7 @@
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  		pathRoot = config.getString(<span class="jxr_string">"pathRoot"</span>, DEFAULT_PATH_ROOT);
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  		quoteFields = config.getBoolean(<span class="jxr_string">"quoteFields"</span>, DEFAULT_QUOTE_FIELDS);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  		tables = config.getList(<span class="jxr_string">"table"</span>);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  		<strong class="jxr_keyword">if</strong> (tables == <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  		<strong class="jxr_keyword">if</strong> (tables == <strong class="jxr_keyword">null</strong> || tables.isEmpty())
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"No tables found for "</span> + name);
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  		String path = config.getString(<span class="jxr_string">"filePathFormat"</span>, DEFAULT_FILE_PATH_FORMAT);
