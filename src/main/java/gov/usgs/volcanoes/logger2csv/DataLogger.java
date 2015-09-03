@@ -61,7 +61,7 @@ public class DataLogger {
 		pathRoot = config.getString("pathRoot", DEFAULT_PATH_ROOT);
 		quoteFields = config.getBoolean("quoteFields", DEFAULT_QUOTE_FIELDS);
 		tables = config.getList("table");
-		if (tables == null)
+		if (tables == null || tables.isEmpty())
 			throw new IOException("No tables found for " + name);
 
 		String path = config.getString("filePathFormat", DEFAULT_FILE_PATH_FORMAT);
