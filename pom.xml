@@ -24,6 +24,12 @@
 		</license>
 	</licenses>
 
+	<issueManagement>
+		<url>https://github.com/usgs/logger2csv</url>
+		<system>GitHub</system>
+	</issueManagement>
+
+
 	<developers>
 		<developer>
 			<id>tparker</id>

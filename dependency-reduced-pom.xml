@@ -6,6 +6,10 @@
   <name>Logger2CSV</name>
   <version>1.0.1</version>
   <url>http://volcanoes.usgs.gov/software</url>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/usgs/logger2csv</url>
+  </issueManagement>
   <developers>
     <developer>
       <id>tparker</id>
