@@ -1,12 +1,14 @@
 package gov.usgs.volcanoes.logger2csv;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.TimeZone;
 
 import org.junit.Before;
@@ -58,5 +60,26 @@ public class DataLoggerTest {
         ConfigFile myConfig = config.deepCopy();
         myConfig.putList("table", null);
         new DataLogger(myConfig);
+    }
+    
+    @Test
+    public void returnIterator() {
+        Iterator<String> it = logger.getTableIterator();
+        
+        // There is always at least one table
+        assertTrue(it.hasNext());
+    }
+
+    @Test
+    public void getFilename() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        cal.set(2015, 8-1, 1, 1, 2, 3);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        long time = cal.getTimeInMillis();
+        String expectedName = "data/testConfig/2015/08/testConfig-testTable-20150801";
+        // There is always at least one table
+        assertEquals(expectedName, logger.getFileName("testTable", time));
     }
 }
