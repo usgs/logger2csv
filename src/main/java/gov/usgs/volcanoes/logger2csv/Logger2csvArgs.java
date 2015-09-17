@@ -3,17 +3,15 @@ package gov.usgs.volcanoes.logger2csv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Parameter;
-import com.martiansoftware.jsap.ParseException;
 import com.martiansoftware.jsap.Switch;
 
-import gov.usgs.volcanoes.util.args.Args;
-import gov.usgs.volcanoes.util.args.Arguments;
-import gov.usgs.volcanoes.util.args.decorator.ConfigFileArg;
-import gov.usgs.volcanoes.util.args.decorator.CreateConfigArg;
-import gov.usgs.volcanoes.util.args.decorator.VerboseArg;
+import gov.usgs.volcanoes.core.args.Args;
+import gov.usgs.volcanoes.core.args.Arguments;
+import gov.usgs.volcanoes.core.args.decorator.ConfigFileArg;
+import gov.usgs.volcanoes.core.args.decorator.CreateConfigArg;
+import gov.usgs.volcanoes.core.args.decorator.VerboseArg;
 
 /**
  * Argument processor for Logger2csv
