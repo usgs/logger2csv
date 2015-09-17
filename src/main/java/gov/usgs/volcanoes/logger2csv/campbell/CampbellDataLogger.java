@@ -38,7 +38,7 @@ public class CampbellDataLogger extends DataLogger {
   private final List<String> tables;
 
   public CampbellDataLogger(ConfigFile config) throws IOException {
-    super(config);
+    super(config, HEADER_COUNT);
 
     tables = config.getList("table");
     if (tables == null || tables.isEmpty())

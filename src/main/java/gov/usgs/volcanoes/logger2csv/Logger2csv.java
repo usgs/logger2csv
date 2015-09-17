@@ -24,17 +24,15 @@ import gov.usgs.volcanoes.core.configfile.ConfigFile;
  */
 public class Logger2csv {
 
-  private static final long M_TO_S = 60;
-  private static final long DAY_TO_S = 24 * 60 * M_TO_S;
   private static final long M_TO_MS = 60 * 1000;
 
   public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
-  public static final long DEFAULT_INTERVAL_M = M_TO_S;
+  public static final long DEFAULT_INTERVAL_M = 60;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
   private ConfigFile configFile;
-  private List<DataLogger> loggers;
+  private List<Poller> pollers;
   private int interval;
 
   public Logger2csv(ConfigFile configFile) {
@@ -42,18 +40,18 @@ public class Logger2csv {
 
     this.configFile = configFile;
     this.interval = configFile.getInt("interval", (int) DEFAULT_INTERVAL_M);
-    loggers = getLoggers();
+    pollers = getPollers();
   }
 
-  private List<DataLogger> getLoggers() {
-    List<DataLogger> loggers = new ArrayList<DataLogger>();
+  private List<Poller> getPollers() {
+    List<Poller> pollers = new ArrayList<Poller>();
 
     for (String station : configFile.getList("station")) {
       ConfigFile config = configFile.getSubConfig(station, true);
       config.put("name", station);
 
       try {
-        loggers.add(DataLoggerFactory.getLogger(config));
+        pollers.add(PollerFactory.getPoller(config));
       } catch (UnknownHostException e) {
         LOGGER.error("Cannot find host \"{}\". I'll skip it this time.",
             config.getString("address"));
@@ -61,55 +59,12 @@ public class Logger2csv {
         LOGGER.error(e.getMessage());
       }
     }
-    return loggers;
-  }
-
-  public void poll(DataLogger logger, String table) {
-    FileDataReader fileReader = new FileDataReader(logger, table);
-    WebDataReader webReader = new WebDataReader(logger, table);
-    FileDataWriter fileWriter = new FileDataWriter(logger, table);
-    LOGGER.debug("Polling {}.{}", logger.name, table);
-
-    int lastRecord;
-    try {
-      lastRecord = fileReader.findLastRecord();
-    } catch (IOException e1) {
-      LOGGER.error("Cannot parse file on disk for {}.{}, I'll skip it this time. File corrupt?",
-          logger.name, table);
-      return;
-    }
-
-    Iterator<String[]> results;
-    try {
-      if (lastRecord > 0)
-        results = webReader.since_record(lastRecord);
-      else
-        results = webReader.backFill((int) (logger.backfill * DAY_TO_S));
-    } catch (IOException e) {
-      LOGGER.error("Cannot read new records from {}.{}, I'll skip it this time.", logger.name,
-          table);
-      return;
-    }
-
-    try {
-      fileWriter.write(results, lastRecord);
-    } catch (ParseException e) {
-      LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
-      return;
-    } catch (IOException e) {
-      LOGGER.error("Cannot write to datafile for {}.{}.", logger.name, table);
-      return;
-    }
-
+    return pollers;
   }
 
   public void pollAllOnce() {
-    for (DataLogger l : loggers) {
-      Iterator<String> it = l.getTableIterator();
-      while (it.hasNext()) {
-        String table = it.next();
-        poll(l, table);
-      }
+    for (Poller p : pollers) {
+      p.poll();
     }
   }
 

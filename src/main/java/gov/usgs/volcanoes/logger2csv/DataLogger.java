@@ -43,12 +43,14 @@ public abstract class DataLogger {
   public final String pathRoot;
   public final String address;
   public final boolean quoteFields;
+  public final int headerCount;
 
   protected final SimpleDateFormat filePathFormat;
   protected final SimpleDateFormat fileSuffixFormat;
   protected final SimpleDateFormat dateFormat;
 
-  public DataLogger(ConfigFile config) throws IOException {
+  public DataLogger(ConfigFile config, int headerCount) throws IOException {
+    this.headerCount = headerCount;
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     name = config.getString("name");

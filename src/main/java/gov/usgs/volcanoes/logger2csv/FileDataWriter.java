@@ -44,7 +44,7 @@ public class FileDataWriter {
 		String workingFile = null;
 		List<String[]> headers = new ArrayList<String[]>();
 		
-		for (int i = 0; i < DataLogger.HEADER_COUNT; i++)
+		for (int i = 0; i < logger.headerCount; i++)
 			headers.add(results.next());
 		
 		while(results.hasNext()) {

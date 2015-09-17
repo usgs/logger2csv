@@ -52,7 +52,7 @@ public class FileDataReader {
 				String[] nextLine;
 
 				// skip header lines at the top
-				for (int i = 0; i < DataLogger.HEADER_COUNT; i++)
+				for (int i = 0; i < logger.headerCount; i++)
 					nextLine = reader.readNext();
 
 				while ((nextLine = reader.readNext()) != null) {
