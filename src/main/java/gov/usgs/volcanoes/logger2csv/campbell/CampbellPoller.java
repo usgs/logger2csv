@@ -5,7 +5,6 @@ import com.opencsv.CSVParser;
 import gov.usgs.volcanoes.logger2csv.FileDataReader;
 import gov.usgs.volcanoes.logger2csv.FileDataWriter;
 import gov.usgs.volcanoes.logger2csv.Poller;
-import gov.usgs.volcanoes.logger2csv.WebDataReader;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,11 +28,14 @@ public class CampbellPoller implements Poller {
 
   private final CampbellDataLogger logger;
   
+  private String[] headers;
+  
   public CampbellPoller(CampbellDataLogger logger) {
     this.logger = logger;
   }
 
   public void poll() {
+    LOGGER.debug("Polling {}", logger.name);
     Iterator<String> tableIt = logger.getTableIterator();
     while (tableIt.hasNext()) {
       String table = tableIt.next();
@@ -42,23 +44,26 @@ public class CampbellPoller implements Poller {
   }
   
   private void pollTable(String table) {
-    FileDataReader fileReader = new FileDataReader(logger, table);
-    FileDataWriter fileWriter = new FileDataWriter(logger, table);
     LOGGER.debug("Polling {}.{}", logger.name, table);
 
-    int lastRecord;
+    // find most recent retrieved record
+    int lastRecordNum;
     try {
-      lastRecord = fileReader.findLastRecord();
+      FileDataReader fileReader = new FileDataReader(logger);
+      String filePattern = logger.getFilePattern(table);
+      String[] lastRecord = fileReader.findLastRecord(filePattern);
+      lastRecordNum = Integer.parseInt(lastRecord[1]);
     } catch (IOException e1) {
       LOGGER.error("Cannot parse file on disk for {}.{}, I'll skip it this time. File corrupt?",
           logger.name, table);
       return;
     }
 
+    // retrieve new data
     Iterator<String[]> results;
     try {
-      if (lastRecord > 0)
-        results = since_record(lastRecord, table);
+      if (lastRecordNum > 0)
+        results = since_record(lastRecordNum, table);
       else
         results = backFill((int) (logger.backfill * DAY_TO_S), table);
     } catch (IOException e) {
@@ -67,8 +72,11 @@ public class CampbellPoller implements Poller {
       return;
     }
 
+    Arrays.
+    // write new data
+    FileDataWriter fileWriter = new FileDataWriter(filePattern, headers);
     try {
-      fileWriter.write(results, lastRecord);
+      fileWriter.write(results);
     } catch (ParseException e) {
       LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
       return;
@@ -133,6 +141,7 @@ public class CampbellPoller implements Poller {
 
     return records.iterator();
   }
+  
   public String getHeader() {
     // TODO Auto-generated method stub
     return null;

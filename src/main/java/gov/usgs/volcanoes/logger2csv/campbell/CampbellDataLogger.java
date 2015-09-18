@@ -69,4 +69,15 @@ public class CampbellDataLogger extends DataLogger {
     String filename = sb.toString().replace('/', File.separatorChar);
     return filename;
   }
+  
+  public String getFilePattern(String table) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("'" + pathRoot + "/" + name + "/'");
+    sb.append(filePathFormat);
+    sb.append("'/" + name + "-" + table + "'");
+    sb.append(fileSuffixFormat);
+
+    String filename = sb.toString().replace('/', File.separatorChar);
+    return filename;
+  }
 }
