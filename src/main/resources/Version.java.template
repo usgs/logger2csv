@@ -1,6 +1,6 @@
 package gov.usgs.volcanoes.logger2csv;
 
-public final class Logger2csvVersion {
+public final class Version {
 
     public static final String BUILD_TIME="@buildtime@";
 

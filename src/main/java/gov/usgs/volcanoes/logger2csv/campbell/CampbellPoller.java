@@ -23,12 +23,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class CampbellPoller implements Poller {
+public class CampbellPoller extends Poller {
   private static final Logger LOGGER = LoggerFactory.getLogger(CampbellPoller.class);
 
   private final CampbellDataLogger logger;
-  
-  private String[] headers;
   
   public CampbellPoller(CampbellDataLogger logger) {
     this.logger = logger;
@@ -54,7 +52,7 @@ public class CampbellPoller implements Poller {
       String[] lastRecord = fileReader.findLastRecord(filePattern);
       lastRecordNum = Integer.parseInt(lastRecord[1]);
     } catch (IOException e1) {
-      LOGGER.error("Cannot parse file on disk for {}.{}, I'll skip it this time. File corrupt?",
+      LOGGER.error("Cannot parse most recent file on disk for {}.{}, I'll skip it this time. File corrupt?",
           logger.name, table);
       return;
     }
@@ -72,9 +70,8 @@ public class CampbellPoller implements Poller {
       return;
     }
 
-    Arrays.
     // write new data
-    FileDataWriter fileWriter = new FileDataWriter(filePattern, headers);
+    FileDataWriter fileWriter = new FileDataWriter(filePattern);
     try {
       fileWriter.write(results);
     } catch (ParseException e) {
@@ -141,10 +138,4 @@ public class CampbellPoller implements Poller {
 
     return records.iterator();
   }
-  
-  public String getHeader() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
 }

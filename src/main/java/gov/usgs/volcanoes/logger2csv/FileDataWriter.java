@@ -5,21 +5,22 @@
  */
 package gov.usgs.volcanoes.logger2csv;
 
+import com.opencsv.CSVWriter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.opencsv.CSVWriter;
 
 import cern.colt.Arrays;
 
@@ -33,12 +34,10 @@ public class FileDataWriter {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
   public static final String FILE_EXTENSION = ".csv";
 
-  private final DataLogger logger;
-  private final String table;
+  private final SimpleDateFormat fileFormat;
 
-  public FileDataWriter(DataLogger logger, String table) {
-    this.logger = logger;
-    this.table = table;
+  public FileDataWriter(String filePattern) {
+    fileFormat = new SimpleDateFormat(filePattern);
   }
 
   public void write(Iterator<String[]> results, int lastRecord) throws ParseException, IOException {
