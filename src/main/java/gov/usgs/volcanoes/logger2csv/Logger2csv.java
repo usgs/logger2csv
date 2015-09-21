@@ -64,7 +64,7 @@ public class Logger2csv {
 
   public void pollAllOnce() {
     for (Poller p : pollers) {
-      p.poll();
+      p.updateFiles();
     }
   }
 

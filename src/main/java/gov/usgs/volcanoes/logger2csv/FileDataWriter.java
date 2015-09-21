@@ -5,11 +5,10 @@
  */
 package gov.usgs.volcanoes.logger2csv;
 
-import com.opencsv.CSVWriter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,7 +29,7 @@ import cern.colt.Arrays;
  * @author Tom Parker
  * 
  */
-public class FileDataWriter {
+public class FileDataWriter implements Closeable {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
   public static final String FILE_EXTENSION = ".csv";
 
@@ -40,7 +39,7 @@ public class FileDataWriter {
     fileFormat = new SimpleDateFormat(filePattern);
   }
 
-  public void write(Iterator<String[]> results, int lastRecord) throws ParseException, IOException {
+  public void write(Iterator<String[]> results) throws ParseException, IOException {
     CSVWriter csvWriter = null;
     String workingFile = null;
     List<String[]> headers = new ArrayList<String[]>();
@@ -78,8 +77,6 @@ public class FileDataWriter {
         csvWriter = new CSVWriter(w);
         if (newFile)
           csvWriter.writeAll(headers, false);
-        else if (Integer.parseInt(line[1]) == lastRecord)
-          continue;
       }
 
       csvWriter.writeNext(line, logger.quoteFields);

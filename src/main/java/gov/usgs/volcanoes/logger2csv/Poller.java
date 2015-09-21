@@ -7,12 +7,13 @@ public abstract class Poller {
 
   protected String[] headers;
   
-  abstract public void poll();
-  
-  public String[] getHeader() {
-    if (headers == null)
-      throw new IllegalStateException("poll() must be called before getHeader()");
-
-    return headers;
-  }
+  abstract public void updateFiles();
+//  abstract public void poll();
+//  
+//  public String[] getHeader() {
+//    if (headers == null)
+//      throw new IllegalStateException("poll() must be called before getHeader()");
+//
+//    return headers;
+//  }
 }
