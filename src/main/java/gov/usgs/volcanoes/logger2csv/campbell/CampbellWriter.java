@@ -8,8 +8,10 @@ package gov.usgs.volcanoes.logger2csv.campbell;
 
 import gov.usgs.volcanoes.logger2csv.FileDataWriter;
 
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,19 +23,36 @@ import java.util.Date;
  */
 public class CampbellWriter extends FileDataWriter {
 
-	private final SimpleDateFormat dateFormat;
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param filePattern Patter used to create filenames
-	 */
-	public CampbellWriter(String filePattern) {
-		super(filePattern);
-		dateFormat = new SimpleDateFormat(CampbellDataLogger.DATE_FORMAT_STRING);
-	}
+  private final SimpleDateFormat loggerDateFormat;
 
-	public Date getDate(CSVRecord record) throws ParseException {
-		return dateFormat.parse(record.get(CampbellDataLogger.DATE_COLUMN));
-	}
+  private final SimpleDateFormat fileDateFormat;
+
+  private final CampbellDataLogger logger;
+  
+  private final String table;
+  
+  /**
+   * Constructor.
+   * 
+   * @param filePattern Patter used to create filenames
+   */
+  public CampbellWriter(CampbellDataLogger logger, String table) {
+    super(logger.getCsvFormat());
+    this.logger = logger;
+    this.table = table;
+    loggerDateFormat = new SimpleDateFormat(CampbellDataLogger.DATE_FORMAT_STRING);
+    fileDateFormat = new SimpleDateFormat(logger.getFilePattern(table));
+  }
+
+  @Override
+  protected Date getDate(CSVRecord record) throws ParseException {
+    return loggerDateFormat.parse(record.get(CampbellDataLogger.DATE_COLUMN));
+  }
+
+  @Override
+  protected File getFile(CSVRecord record) throws ParseException {
+    Date date = logger.parseDate(record);
+    return new File(fileDateFormat.format(date));
+  }
+
 }

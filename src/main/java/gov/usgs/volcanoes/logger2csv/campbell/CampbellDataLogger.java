@@ -8,6 +8,7 @@ package gov.usgs.volcanoes.logger2csv.campbell;
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
 import gov.usgs.volcanoes.logger2csv.DataLogger;
 
+import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +77,10 @@ public class CampbellDataLogger extends DataLogger {
 
 		String filename = sb.toString().replace('/', File.separatorChar);
 		return filename;
+	}
+	
+	protected Date parseDate(CSVRecord record) throws ParseException {
+	  return parseDate(record.get(1));
 	}
 
 }

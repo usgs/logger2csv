@@ -37,140 +37,133 @@ import java.util.ListIterator;
  * @author Tom Parker
  */
 public class CampbellPoller extends Poller {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CampbellPoller.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CampbellPoller.class);
 
-	private final CampbellDataLogger logger;
+  private final CampbellDataLogger logger;
 
-	/**
-	 * A Poller class for collecting data from a CompbellScientific data logger.
-	 * 
-	 * @param logger
-	 *            The DataLogger to poll
-	 */
-	public CampbellPoller(CampbellDataLogger logger) {
-		this.logger = logger;
-	}
+  /**
+   * A Poller class for collecting data from a CompbellScientific data logger.
+   * 
+   * @param logger
+   *          The DataLogger to poll
+   */
+  public CampbellPoller(CampbellDataLogger logger) {
+    this.logger = logger;
+  }
 
-	@Override
-	public void updateFiles() {
-		LOGGER.debug("Polling {}", logger.name);
-		Iterator<String> tableIt = logger.getTableIterator();
-		while (tableIt.hasNext()) {
-			String table = tableIt.next();
-			try {
-				updateTable(table);
-			} catch (IOException e) {
-				LOGGER.error("Unable to update {}.{}, I'll try again next time. ({})", logger.name, table,
-						e.getLocalizedMessage());
-			}
-		}
-	}
+  @Override
+  public void updateFiles() {
+    LOGGER.debug("Polling {}", logger.name);
+    Iterator<String> tableIt = logger.getTableIterator();
+    while (tableIt.hasNext()) {
+      String table = tableIt.next();
+      try {
+        updateTable(table);
+      } catch (IOException e) {
+        LOGGER.error("Unable to update {}.{}, I'll try again next time. ({})", logger.name, table,
+            e.getLocalizedMessage());
+      }
+    }
+  }
 
-	private void updateTable(String table) throws IOException {
-		LOGGER.debug("Polling {}.{}", logger.name, table);
+  private void updateTable(String table) throws IOException {
+    LOGGER.debug("Polling {}.{}", logger.name, table);
 
-		int lastRecordNum = findLastRecordNum(table);
+    int lastRecordNum = findLastRecordNum(table);
 
-		ListIterator<CSVRecord> results;
-		try {
-			results = retrieveNewData(table, lastRecordNum);
-		} catch (IOException e) {
-			LOGGER.error("Cannot retrieve data from {}.{}, I'll try again next time. ({})", logger.name, table,
-					e.getLocalizedMessage());
-			return;
-		}
+    ListIterator<CSVRecord> results;
+    try {
+      results = retrieveNewData(table, lastRecordNum);
+    } catch (IOException e) {
+      LOGGER.error("Cannot retrieve data from {}.{}, I'll try again next time. ({})", logger.name,
+          table, e.getLocalizedMessage());
+      return;
+    }
 
-		if (!results.hasNext()) {
-			LOGGER.info("No new data found in table {}.{}", logger.name, table);
-			return;
-		}
+    if (!results.hasNext()) {
+      LOGGER.info("No new data found in table {}.{}", logger.name, table);
+      return;
+    }
 
-		List<CSVRecord> headers = extractHeaders(results);
+    List<CSVRecord> headers = extractHeaders(results);
 
-		CSVRecord record = results.next();
-		if (recordMatches(record, lastRecordNum)) {
-			// do nothing and let the old value fall on the floor
-		} else {
-			// different record. Quick, put it back!
-			results.previous();
-		}
+    CSVRecord record = results.next();
+    if (recordMatches(record, lastRecordNum)) {
+      // do nothing and let the old value fall on the floor
+    } else {
+      // different record. Quick, put it back!
+      results.previous();
+    }
 
-		// write new data
-		FileDataWriter fileWriter = new CampbellWriter(logger.getFilePattern(table));
-		fileWriter.setHeader(headers);
-		try {
-			fileWriter.write(results);
-		} catch (ParseException e) {
-			LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
-			return;
-		} catch (IOException e) {
-			LOGGER.error("Cannot write to datafile for {}.{}.", logger.name, table);
-			return;
-		}
+    // write new data
+    FileDataWriter fileWriter = new CampbellWriter(logger, table);
+    fileWriter.setHeader(headers);
+    fileWriter.write(results);
+  }
 
-	}
+  private ListIterator<CSVRecord> retrieveNewData(String table, int lastRecordNum)
+      throws IOException {
+    ListIterator<CSVRecord> results;
+    if (lastRecordNum > 0)
+      results = since_record(lastRecordNum, table);
+    else
+      results = backFill((int) (logger.backfill * DAY_TO_S), table);
 
-	private ListIterator<CSVRecord> retrieveNewData(String table, int lastRecordNum) throws IOException {
-		ListIterator<CSVRecord> results;
-		if (lastRecordNum > 0)
-			results = since_record(lastRecordNum, table);
-		else
-			results = backFill((int) (logger.backfill * DAY_TO_S), table);
+    return results;
+  }
 
-		return results;
-	}
+  private boolean recordMatches(CSVRecord recordString, int recordNum) {
+    if (Integer.parseInt(recordString.get(0)) == recordNum)
+      return true;
+    else
+      return false;
+  }
 
-	private boolean recordMatches(CSVRecord recordString, int recordNum) {
-		if (Integer.parseInt(recordString.get(0)) == recordNum)
-			return true;
-		else
-			return false;
-	}
+  private int findLastRecordNum(String table) throws IOException {
+    FileDataReader fileReader = new FileDataReader(logger);
+    CSVRecord lastRecord = fileReader.findLastRecord(logger.getFilePattern(table));
+    return Integer.parseInt(lastRecord.get(1));
+  }
 
-	private int findLastRecordNum(String table) throws IOException {
-		FileDataReader fileReader = new FileDataReader(logger);
-		CSVRecord lastRecord = fileReader.findLastRecord(logger.getFilePattern(table));
-		return Integer.parseInt(lastRecord.get(1));
-	}
+  public ListIterator<CSVRecord> since_record(int record, String table) throws IOException {
+    LOGGER.info("Downloading new records from {}.{}.", logger.name, table);
+    return getResults("since-record", record, table);
+  }
 
-	public ListIterator<CSVRecord> since_record(int record, String table) throws IOException {
-		LOGGER.info("Downloading new records from {}.{}.", logger.name, table);
-		return getResults("since-record", record, table);
-	}
+  public ListIterator<CSVRecord> backFill(int backfillS, String table) throws IOException {
+    LOGGER.info("Downloading all recent records from {}.{}.", logger.name, table);
+    return getResults("backfill", backfillS, table);
+  }
 
-	public ListIterator<CSVRecord> backFill(int backfillS, String table) throws IOException {
-		LOGGER.info("Downloading all recent records from {}.{}.", logger.name, table);
-		return getResults("backfill", backfillS, table);
-	}
+  private ListIterator<CSVRecord> getResults(final String mode, final int p1, String table)
+      throws IOException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("http://");
+    sb.append(logger.address);
+    sb.append("/?command=DataQuery&uri=dl:");
+    sb.append(table);
+    sb.append("&mode=");
+    sb.append(mode);
+    sb.append("&format=TOA5");
+    sb.append("&p1=");
+    sb.append(p1);
 
-	private ListIterator<CSVRecord> getResults(final String mode, final int p1, String table) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		sb.append("http://");
-		sb.append(logger.address);
-		sb.append("/?command=DataQuery&uri=dl:");
-		sb.append(table);
-		sb.append("&mode=");
-		sb.append(mode);
-		sb.append("&format=TOA5");
-		sb.append("&p1=");
-		sb.append(p1);
+    // String url = sb.toString();
+    URL url = new URL(sb.toString());
+    CSVParser parser = CSVParser.parse(url, StandardCharsets.UTF_8, logger.getCsvFormat());
+    ListIterator<CSVRecord> iterator = parser.getRecords().listIterator();
 
-		// String url = sb.toString();
-		URL url = new URL(sb.toString());
-		CSVParser parser = CSVParser.parse(url, StandardCharsets.UTF_8, logger.getCsvFormat());
-		ListIterator<CSVRecord> iterator = parser.getRecords().listIterator();
+    return iterator;
+  }
 
-		return iterator;
-	}
+  private List<CSVRecord> extractHeaders(Iterator<CSVRecord> iterator) {
+    List<CSVRecord> headers = new ArrayList<CSVRecord>();
+    for (int i = 0; i < logger.headerCount; i++) {
+      if (iterator.hasNext()) {
+        headers.add(iterator.next());
+      }
+    }
 
-	private List<CSVRecord> extractHeaders(Iterator<CSVRecord> iterator) {
-		List<CSVRecord> headers = new ArrayList<CSVRecord>();
-		for (int i = 0; i < logger.headerCount; i++) {
-			if (iterator.hasNext()) {
-				headers.add(iterator.next());
-			}
-		}
-
-		return headers;
-	}
+    return headers;
+  }
 }
