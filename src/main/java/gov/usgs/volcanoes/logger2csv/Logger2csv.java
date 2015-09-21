@@ -36,7 +36,7 @@ public class Logger2csv {
   private int interval;
 
   public Logger2csv(ConfigFile configFile) {
-    LOGGER.info("Launching Logger2csv ({})", Logger2csvVersion.VERSION_STRING);
+    LOGGER.info("Launching Logger2csv ({})", Version.VERSION_STRING);
 
     this.configFile = configFile;
     this.interval = configFile.getInt("interval", (int) DEFAULT_INTERVAL_M);
@@ -57,7 +57,9 @@ public class Logger2csv {
             config.getString("address"));
       } catch (IOException e) {
         LOGGER.error(e.getMessage());
-      }
+      } catch (ParseException e) {
+          LOGGER.error("Unable to parse station stanza. ({}: {})", station, e.getLocalizedMessage());
+	}
     }
     return pollers;
   }

@@ -5,6 +5,7 @@
  */
 package gov.usgs.volcanoes.logger2csv;
 
+import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,66 +25,51 @@ import java.util.List;
 import cern.colt.Arrays;
 
 /**
- * A class to write CSV data to a file
+ * A class to write CSV data to a file.
  * 
  * @author Tom Parker
  * 
  */
-public class FileDataWriter implements Closeable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
-  public static final String FILE_EXTENSION = ".csv";
+public abstract class FileDataWriter {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
+	public static final String FILE_EXTENSION = ".csv";
 
-  private final SimpleDateFormat fileFormat;
+	private final SimpleDateFormat fileFormat;
 
-  public FileDataWriter(String filePattern) {
-    fileFormat = new SimpleDateFormat(filePattern);
-  }
+	private final List<CSVRecord> headers;
 
-  public void write(Iterator<String[]> results) throws ParseException, IOException {
-    CSVWriter csvWriter = null;
-    String workingFile = null;
-    List<String[]> headers = new ArrayList<String[]>();
+	abstract protected Date getDate(CSVRecord record) throws ParseException;
+	
+	abstract protected File getFile(CSVRecord record) throws ParseException;
+	
+	/**
+	 * Constructor.
+	 * @param filePattern filename pattern
+	 */
+	public FileDataWriter(String filePattern) {
+		headers = new ArrayList<CSVRecord>();
+		fileFormat = new SimpleDateFormat(filePattern);
+	}
 
-    for (int i = 0; i < logger.headerCount; i++)
-      headers.add(results.next());
+	public void write(Iterator<CSVRecord> results) throws ParseException, IOException {
+		File workingFile;
+		
+		while (results.hasNext()) {
+			CSVRecord record = results.next();
+			File thisFile = getFile(record);
+			
+			if (!thisFile.equals(workingFile)) {
+				continue here!!!
+			}
+		}
+	}
 
-    while (results.hasNext()) {
-      String[] line = results.next();
-      LOGGER.debug("line: " + Arrays.toString(line));
+	public void addHeader(CSVRecord header) {
+		headers.add(header);
+	}
 
-      Date date = logger.parseDate(line[0]);
-      String recordFile = logger.getFileName(table, date.getTime()) + FILE_EXTENSION;
-
-      if (!recordFile.equals(workingFile)) {
-        if (csvWriter != null)
-          csvWriter.close();
-
-        workingFile = recordFile;
-        boolean newFile = false;
-        File file = new File(workingFile);
-        if (!file.exists()) {
-          LOGGER.debug("Creating new file.");
-          newFile = true;
-          File parent = file.getParentFile();
-          if (!parent.exists()) {
-            LOGGER.debug("Creating new directory.");
-            boolean result = file.getParentFile().mkdirs();
-            if (!result)
-              throw new IOException("Couldn't create directory: " + parent);
-          }
-        }
-
-        Writer w = new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8");
-        csvWriter = new CSVWriter(w);
-        if (newFile)
-          csvWriter.writeAll(headers, false);
-      }
-
-      csvWriter.writeNext(line, logger.quoteFields);
-    }
-
-    if (csvWriter != null)
-      csvWriter.close();
-  }
+	public void setHeader(List<CSVRecord> headerList) {
+		headers.addAll(headerList);
+	}
 
 }

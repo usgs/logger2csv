@@ -107,4 +107,8 @@ public abstract class DataLogger {
 		String filename = sb.toString().replace('/', File.separatorChar);
 		return filename;
 	}
+
+	public CSVFormat getCsvFormat() {
+		return csvFormat;
+	}
 }

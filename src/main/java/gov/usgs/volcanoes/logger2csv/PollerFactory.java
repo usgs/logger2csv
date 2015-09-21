@@ -5,6 +5,7 @@ import gov.usgs.volcanoes.logger2csv.campbell.CampbellDataLogger;
 import gov.usgs.volcanoes.logger2csv.campbell.CampbellPoller;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * Types of data loggers I can talk to.
@@ -26,7 +27,7 @@ public final class PollerFactory {
   // non-instantiatable
   private PollerFactory() {}
   
-  public static DataLogger getLogger(ConfigFile config) throws IOException {
+  public static DataLogger getLogger(ConfigFile config) throws IOException, ParseException {
     DataLogger logger = null;
     LoggerType type = LoggerType.valueOf(config.getString("type"));
     switch (type) {
@@ -40,7 +41,7 @@ public final class PollerFactory {
     return logger;
   }
 
-  public static Poller getPoller(ConfigFile config) throws IOException {
+  public static Poller getPoller(ConfigFile config) throws IOException, ParseException {
     Poller poller = null;
     LoggerType type = LoggerType.valueOf(config.getString("type"));
     switch (type) {
