@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -35,11 +34,9 @@ public abstract class FileDataWriter {
 
 
   private final List<CSVRecord> headers;
-
   private final CSVFormat csvFormat;
-
+  
   abstract protected Date getDate(CSVRecord record) throws ParseException;
-
   abstract protected File getFile(CSVRecord record) throws ParseException;
 
   /**
@@ -118,7 +115,7 @@ public abstract class FileDataWriter {
     headers.add(header);
   }
 
-  public void setHeader(List<CSVRecord> headerList) {
+  public void addHeaders(List<CSVRecord> headerList) {
     headers.addAll(headerList);
   }
 

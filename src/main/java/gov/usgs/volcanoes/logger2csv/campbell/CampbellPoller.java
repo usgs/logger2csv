@@ -12,20 +12,12 @@ import gov.usgs.volcanoes.logger2csv.Poller;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +28,7 @@ import java.util.ListIterator;
  * 
  * @author Tom Parker
  */
-public class CampbellPoller extends Poller {
+public class CampbellPoller implements Poller {
   private static final Logger LOGGER = LoggerFactory.getLogger(CampbellPoller.class);
 
   private final CampbellDataLogger logger;
@@ -51,7 +43,6 @@ public class CampbellPoller extends Poller {
     this.logger = logger;
   }
 
-  @Override
   public void updateFiles() {
     LOGGER.debug("Polling {}", logger.name);
     Iterator<String> tableIt = logger.getTableIterator();
@@ -97,7 +88,7 @@ public class CampbellPoller extends Poller {
 
     // write new data
     FileDataWriter fileWriter = new CampbellWriter(logger, table);
-    fileWriter.setHeader(headers);
+    fileWriter.addHeaders(headers);
     fileWriter.write(results);
   }
 
@@ -125,12 +116,12 @@ public class CampbellPoller extends Poller {
     return Integer.parseInt(lastRecord.get(1));
   }
 
-  public ListIterator<CSVRecord> since_record(int record, String table) throws IOException {
+  private ListIterator<CSVRecord> since_record(int record, String table) throws IOException {
     LOGGER.info("Downloading new records from {}.{}.", logger.name, table);
     return getResults("since-record", record, table);
   }
 
-  public ListIterator<CSVRecord> backFill(int backfillS, String table) throws IOException {
+  private ListIterator<CSVRecord> backFill(int backfillS, String table) throws IOException {
     LOGGER.info("Downloading all recent records from {}.{}.", logger.name, table);
     return getResults("backfill", backfillS, table);
   }
@@ -150,7 +141,7 @@ public class CampbellPoller extends Poller {
 
     // String url = sb.toString();
     URL url = new URL(sb.toString());
-    CSVParser parser = CSVParser.parse(url, StandardCharsets.UTF_8, logger.getCsvFormat());
+    CSVParser parser = CSVParser.parse(url, StandardCharsets.UTF_8, logger.csvFormat);
     ListIterator<CSVRecord> iterator = parser.getRecords().listIterator();
 
     return iterator;

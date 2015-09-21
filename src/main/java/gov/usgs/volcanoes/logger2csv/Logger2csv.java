@@ -1,33 +1,38 @@
+/*
+ * I waive copyright and related rights in the this work worldwide
+ * through the CC0 1.0 Universal public domain dedication.
+ * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ */
+
 package gov.usgs.volcanoes.logger2csv;
+
+import gov.usgs.volcanoes.core.configfile.ConfigFile;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import gov.usgs.volcanoes.core.configfile.ConfigFile;
 
 /**
  * An application to write CSV files from a collection of remote data loggers.
  * 
  * @author Tom Parker
  * 
- *         I waive copyright and related rights in the this work worldwide
- *         through the CC0 1.0 Universal public domain dedication.
- *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 public class Logger2csv {
 
   private static final long M_TO_MS = 60 * 1000;
 
+  /** Default config file name */
   public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
-  public static final long DEFAULT_INTERVAL_M = 60;
+
+  /** Default polling interval */
+  public static final int DEFAULT_INTERVAL_M = 60;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
@@ -35,11 +40,16 @@ public class Logger2csv {
   private List<Poller> pollers;
   private int interval;
 
+  /**
+   * Constructor.
+   * 
+   * @param configFile app connfiguration
+   */
   public Logger2csv(ConfigFile configFile) {
     LOGGER.info("Launching Logger2csv ({})", Version.VERSION_STRING);
 
     this.configFile = configFile;
-    this.interval = configFile.getInt("interval", (int) DEFAULT_INTERVAL_M);
+    this.interval = configFile.getInt("interval", DEFAULT_INTERVAL_M);
     pollers = getPollers();
   }
 
@@ -58,18 +68,25 @@ public class Logger2csv {
       } catch (IOException e) {
         LOGGER.error(e.getMessage());
       } catch (ParseException e) {
-          LOGGER.error("Unable to parse station stanza. ({}: {})", station, e.getLocalizedMessage());
-	}
+        LOGGER.error("Unable to parse station stanza. ({}: {})", station, e.getLocalizedMessage());
+      }
     }
     return pollers;
   }
 
+  /**
+   * Poll each configured logger once
+   */
   public void pollAllOnce() {
     for (Poller p : pollers) {
       p.updateFiles();
     }
   }
 
+  /**
+   * Poll each configured logger with a fixed rest interval. Poll times will slip since rest
+   * interval is fixed.
+   */
   private void pollAllCountinous() {
     while (true) {
       pollAllOnce();
@@ -111,7 +128,6 @@ public class Logger2csv {
     if (cf == null) {
       System.exit(1);
     }
-
 
     // Get the data
     Logger2csv logger2csv = new Logger2csv(cf);

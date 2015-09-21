@@ -8,7 +8,6 @@ package gov.usgs.volcanoes.logger2csv.campbell;
 
 import gov.usgs.volcanoes.logger2csv.FileDataWriter;
 
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.File;
@@ -24,22 +23,17 @@ import java.util.Date;
 public class CampbellWriter extends FileDataWriter {
 
   private final SimpleDateFormat loggerDateFormat;
-
   private final SimpleDateFormat fileDateFormat;
-
   private final CampbellDataLogger logger;
-  
-  private final String table;
-  
+
   /**
    * Constructor.
    * 
    * @param filePattern Patter used to create filenames
    */
   public CampbellWriter(CampbellDataLogger logger, String table) {
-    super(logger.getCsvFormat());
+    super(logger.csvFormat);
     this.logger = logger;
-    this.table = table;
     loggerDateFormat = new SimpleDateFormat(CampbellDataLogger.DATE_FORMAT_STRING);
     fileDateFormat = new SimpleDateFormat(logger.getFilePattern(table));
   }

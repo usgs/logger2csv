@@ -1,3 +1,9 @@
+/*
+ * I waive copyright and related rights in the this work worldwide
+ * through the CC0 1.0 Universal public domain dedication.
+ * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ */
+
 package gov.usgs.volcanoes.logger2csv;
 
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
@@ -27,20 +33,6 @@ public final class PollerFactory {
   // non-instantiatable
   private PollerFactory() {}
   
-  public static DataLogger getLogger(ConfigFile config) throws IOException, ParseException {
-    DataLogger logger = null;
-    LoggerType type = LoggerType.valueOf(config.getString("type"));
-    switch (type) {
-      case CAMPBELL:
-        logger = new CampbellDataLogger(config);
-        break;
-      default:
-        throw new UnsupportedOperationException("Unknown type: " + type);
-    }
-    
-    return logger;
-  }
-
   public static Poller getPoller(ConfigFile config) throws IOException, ParseException {
     Poller poller = null;
     LoggerType type = LoggerType.valueOf(config.getString("type"));

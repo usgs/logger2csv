@@ -1,19 +1,15 @@
+/*
+ * I waive copyright and related rights in the this work worldwide
+ * through the CC0 1.0 Universal public domain dedication.
+ * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ */
+
 package gov.usgs.volcanoes.logger2csv;
 
-public abstract class Poller {
+public interface Poller {
   public static final long M_TO_S = 60;
   public static final long DAY_TO_S = 24 * 60 * M_TO_S;
   public static final long M_TO_MS = 60 * 1000;
 
-  protected String[] headers;
-  
   abstract public void updateFiles();
-//  abstract public void poll();
-//  
-//  public String[] getHeader() {
-//    if (headers == null)
-//      throw new IllegalStateException("poll() must be called before getHeader()");
-//
-//    return headers;
-//  }
 }

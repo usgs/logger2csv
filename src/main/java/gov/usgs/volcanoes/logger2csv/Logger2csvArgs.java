@@ -1,7 +1,10 @@
-package gov.usgs.volcanoes.logger2csv;
+/*
+ * I waive copyright and related rights in the this work worldwide
+ * through the CC0 1.0 Universal public domain dedication.
+ * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package gov.usgs.volcanoes.logger2csv;
 
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Parameter;
@@ -12,6 +15,9 @@ import gov.usgs.volcanoes.core.args.Arguments;
 import gov.usgs.volcanoes.core.args.decorator.ConfigFileArg;
 import gov.usgs.volcanoes.core.args.decorator.CreateConfigArg;
 import gov.usgs.volcanoes.core.args.decorator.VerboseArg;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Argument processor for Logger2csv
