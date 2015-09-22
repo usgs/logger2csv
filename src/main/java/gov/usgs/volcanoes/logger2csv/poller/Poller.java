@@ -4,7 +4,7 @@
  * https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
-package gov.usgs.volcanoes.logger2csv;
+package gov.usgs.volcanoes.logger2csv.poller;
 
 public interface Poller {
   public static final long M_TO_S = 60;

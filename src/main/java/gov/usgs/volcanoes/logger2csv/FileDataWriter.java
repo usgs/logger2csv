@@ -34,7 +34,22 @@ public abstract class FileDataWriter {
   private final List<CSVRecord> headers;
   private final CSVFormat csvFormat;
   
+  /**
+   * Find a Date in a CSV record.
+   * 
+   * @param record Record to search
+   * @return the Date
+   * @throws ParseException when format cannot be parsed
+   */
   abstract protected Date getDate(CSVRecord record) throws ParseException;
+
+  /**
+   * Create a filename to hold a CSV record CSV record.
+   * 
+   * @param record Record to be stored
+   * @return the name of the file
+   * @throws ParseException when format cannot be parsed
+   */
   abstract protected File getFile(CSVRecord record) throws ParseException;
 
   /**
@@ -47,21 +62,27 @@ public abstract class FileDataWriter {
     this.csvFormat = csvFormat;
   }
 
-  public final void write(Iterator<CSVRecord> results) {
+  /**
+   * Write records to daily CSV files
+   * 
+   * @param records records to write
+   * @throws ParseException 
+   * @throws IOException 
+   */
+  public final void write(Iterator<CSVRecord> records) throws ParseException, IOException {
     File workingFile = null;
     CSVPrinter printer = null;
 
-    while (results.hasNext()) {
-      CSVRecord record = results.next();
+    while (records.hasNext()) {
+      CSVRecord record = records.next();
       File thisFile = null;
       try {
         thisFile = getFile(record);
         LOGGER.debug("working file: {}", thisFile);
       } catch (ParseException e) {
         if (printer != null) {
-          LOGGER.error("Unable to parse record. ({})", e.getLocalizedMessage());
           close(printer);
-          return;
+          throw e;
         }
       }
 
@@ -70,21 +91,14 @@ public abstract class FileDataWriter {
         if (printer != null) {
           close(printer);
         }
+        
         try {
           printer = getPrinter(workingFile);
+          printer.printRecord(record);
         } catch (IOException e) {
-          LOGGER.error("Unable to open file. ({})", e.getLocalizedMessage());
           close(printer);
-          return;
+          throw e;
         }
-      }
-      
-      try {
-        printer.printRecord(record);
-      } catch (IOException e) {
-        LOGGER.error("Unable to write record. ({})", e.getLocalizedMessage());
-        close(printer);
-        return;
       }
     }
   }
@@ -111,12 +125,21 @@ public abstract class FileDataWriter {
     return printer;
   }
 
+  /**
+   * Add line to the headers.
+   * 
+   * @param header header row
+   */
   public final void addHeader(CSVRecord header) {
     headers.add(header);
   }
 
+  /**
+   * Add a list of rows to the header.
+   * 
+   * @param headerList List of header rows to add
+   */
   public final void addHeaders(List<CSVRecord> headerList) {
     headers.addAll(headerList);
   }
-
 }

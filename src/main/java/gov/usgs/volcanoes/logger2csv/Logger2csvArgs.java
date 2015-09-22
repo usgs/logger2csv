@@ -1,7 +1,6 @@
 /*
- * I waive copyright and related rights in the this work worldwide
- * through the CC0 1.0 Universal public domain dedication.
- * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ * I waive copyright and related rights in the this work worldwide through the CC0 1.0 Universal
+ * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
 package gov.usgs.volcanoes.logger2csv;
@@ -11,6 +10,7 @@ import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.Switch;
 
 import gov.usgs.volcanoes.core.args.Args;
+import gov.usgs.volcanoes.core.args.ArgumentException;
 import gov.usgs.volcanoes.core.args.Arguments;
 import gov.usgs.volcanoes.core.args.decorator.ConfigFileArg;
 import gov.usgs.volcanoes.core.args.decorator.CreateConfigArg;
@@ -24,26 +24,40 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Tom Parker
  * 
- *         I waive copyright and related rights in the this work worldwide
- *         through the CC0 1.0 Universal public domain dedication.
+ *         I waive copyright and related rights in the this work worldwide through the CC0 1.0
+ *         Universal public domain dedication.
  *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 public class Logger2csvArgs {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csvArgs.class);
 
-  public static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
+
+  /** Default config file name */
   public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
 
-  public static final String PROGRAM_NAME = "java -jar gov.usgs.volcanes.logger2csv.Logger2csv";
-  public static final String EXPLANATION = "I am the logger2csv server\n";
-  private static final Parameter[] PARAMETERS = new Parameter[] {new Switch("persistent", 'p',
-      "persistent", "Run persistenly, periodically polling loggers."),};
+  private static final String EXAMPLE_CONFIG_FILENAME = "logger2csv-example.config";
+  private static final String PROGRAM_NAME = "java -jar gov.usgs.volcanes.logger2csv.Logger2csv";
+  private static final String EXPLANATION = "I am the logger2csv server\n";
 
+  private static final Parameter[] PARAMETERS = new Parameter[] {new Switch("persistent", 'p',
+      "persistent", "Run persistenly, periodically polling loggers.")};
+
+  /** Run persistently? */
   public final boolean persistent;
+  
+  /** configuration file name */
   public final String configFileName;
+  
+  /** Okay to start application */
   public final boolean runnable;
 
-  public Logger2csvArgs(String[] commandLineArgs) throws Exception {
+  /**
+   * Parse my apps command line arguments.
+   * 
+   * @param commandLineArgs the arg array passed to main()
+   * @throws ArgumentException if something goes wrong
+   */
+  public Logger2csvArgs(String[] commandLineArgs) throws ArgumentException {
     Arguments args = new Args(PROGRAM_NAME, EXPLANATION, PARAMETERS);
     args = new ConfigFileArg(DEFAULT_CONFIG_FILENAME, args);
     args = new CreateConfigArg(EXAMPLE_CONFIG_FILENAME, args);
@@ -57,6 +71,6 @@ public class Logger2csvArgs {
     configFileName = jsapResult.getString("config-filename");
     LOGGER.debug("Setting: configFileName={}", configFileName);
 
-    runnable = !(args.messagePrinted() || jsapResult.getBoolean("create-config")); 
+    runnable = !(args.messagePrinted() || jsapResult.getBoolean("create-config"));
   }
 }

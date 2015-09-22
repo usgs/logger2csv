@@ -1,13 +1,13 @@
 /*
- * I waive copyright and related rights in the this work worldwide
- * through the CC0 1.0 Universal public domain dedication.
- * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ * I waive copyright and related rights in the this work worldwide through the CC0 1.0 Universal
+ * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
-package gov.usgs.volcanoes.logger2csv;
+package gov.usgs.volcanoes.logger2csv.logger;
 
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
 import gov.usgs.volcanoes.core.configfile.parser.CsvFormatParser;
+import gov.usgs.volcanoes.logger2csv.Logger2csv;
 
 import org.apache.commons.csv.CSVFormat;
 import org.slf4j.Logger;
@@ -23,52 +23,76 @@ import java.util.TimeZone;
  * 
  * @author Tom Parker
  * 
- *         I waive copyright and related rights in the this work worldwide
- *         through the CC0 1.0 Universal public domain dedication.
+ *         I waive copyright and related rights in the this work worldwide through the CC0 1.0
+ *         Universal public domain dedication.
  *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 public abstract class DataLogger {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
+  /** Default pattern for file paths. */
   public static final String DEFAULT_FILE_PATH_FORMAT = "yyyy/MM";
-  public static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd'.csv'";
-  public static final String DEFAULT_PATH_ROOT = "data";
-  public static final int DEFAULT_BACKFILL = 2;
-  public static final boolean DEFAULT_QUOTE_FIELDS = false;
-  public static final String TOA5_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-  public static final CSVFormat DEFAULT_CSV_FORMAT = CSVFormat.RFC4180;
-  public static final String DEFAULT_COMMENT_CHAR = "#";
 
+  /** Default patther for file suffixes, including file extension. */
+  public static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd'.csv'";
+
+  /** Default root of file paths. */
+  public static final String DEFAULT_PATH_ROOT = "data";
+
+  /** Default number of days to backfill. */
+  public static final int DEFAULT_BACKFILL = 2;
+
+  /** Default pattern of CSV date columns */
+  public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+  /** Default CSV format. */
+  public static final CSVFormat DEFAULT_CSV_FORMAT = CSVFormat.RFC4180;
+
+  /** My name. */
   public final String name;
+
+  /** Number of days to backfill. */
   public final int backfill;
+
+  /** Path root. */
   public final String pathRoot;
+
+  /** Address of logger */
   public final String address;
-  public final boolean quoteFields;
+
+  /** Number of header rows */
   public final int headerCount;
+
+  /** Format of CSV files */
   public final CSVFormat csvFormat;
-  public final String commentChar;
 
   protected final SimpleDateFormat filePathFormat;
   protected final SimpleDateFormat fileSuffixFormat;
   protected final SimpleDateFormat dateFormat;
   protected final SimpleDateFormat csvDateFormat;
 
-  public DataLogger(ConfigFile config, int headerCount) throws IOException, ParseException {
+  /**
+   * The super logger.
+   * 
+   * @param config Logger config stanza
+   * @param headerCount Number of header rows
+   * @throws LoggerException when logger
+   */
+  public DataLogger(ConfigFile config, int headerCount) throws LoggerException {
     this.headerCount = headerCount;
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     name = config.getString("name");
     if (name == null)
-      throw new IOException("Station name must be specified in Config.");
+      throw new LoggerException("Station name must be specified in Config.");
     LOGGER.debug("creating logger {}", name);
 
     address = config.getString("address");
     if (address == null)
-      throw new IOException("Station address must be specified in Config.");
+      throw new LoggerException("Station address must be specified in Config.");
 
     backfill = config.getInt("backfill", DEFAULT_BACKFILL);
     pathRoot = config.getString("pathRoot", DEFAULT_PATH_ROOT);
-    quoteFields = config.getBoolean("quoteFields", DEFAULT_QUOTE_FIELDS);
 
     String path = config.getString("filePathFormat", DEFAULT_FILE_PATH_FORMAT);
     filePathFormat = new SimpleDateFormat(path);
@@ -76,11 +100,13 @@ public abstract class DataLogger {
     String suffix = config.getString("fileSuffixFormat", DEFAULT_FILE_SUFFIX_FORMAT);
     fileSuffixFormat = new SimpleDateFormat(suffix);
 
-    dateFormat = new SimpleDateFormat(TOA5_DATE_FORMAT);
+    dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
 
-    csvFormat = config.getObject("csvFormat", new CsvFormatParser());
-
-    commentChar = config.getString("commentChar", DEFAULT_COMMENT_CHAR);
+    try {
+      csvFormat = config.getObject("csvFormat", new CsvFormatParser());
+    } catch (ParseException e) {
+      throw new LoggerException(e);
+    }
 
     String csvDateFormatString = config.getString("csvDateFormat", dateFormat.toPattern());
     csvDateFormat = new SimpleDateFormat(csvDateFormatString);

@@ -7,11 +7,10 @@
 package gov.usgs.volcanoes.logger2csv.campbell;
 
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
-import gov.usgs.volcanoes.logger2csv.DataLogger;
+import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
+import gov.usgs.volcanoes.logger2csv.logger.LoggerException;
 
 import org.apache.commons.csv.CSVRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,13 +25,18 @@ import java.util.List;
  * @author Tom Parker
  */
 public final class CampbellDataLogger extends DataLogger {
+  
+  /** column index of date field */
   public static final int DATE_COLUMN = 0;
-
+  
+  /** column index of record number */
+  public static final int RECORD_NUM_COLUMN = 1;
+  
+  /** format of date field */
   public static final String DATE_FORMAT_STRING = "yyyy-MM-dd hh:mm:ss";
-
+  
+  /** number of header lines */
   public static final int HEADER_COUNT = 4;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(CampbellDataLogger.class);
 
   private final List<String> tables;
 
@@ -40,18 +44,23 @@ public final class CampbellDataLogger extends DataLogger {
    * A data model for working with a CampbellScientific data logger.
    *
    * @param config logger configuration
-   * @throws IOException when there are no tables configured
-   * @throws ParseException when station stanza cannot be parsed
+   * @throws LoggerException when there are no tables configured
    */
-  public CampbellDataLogger(ConfigFile config) throws IOException, ParseException {
+  public CampbellDataLogger(ConfigFile config) throws LoggerException {
     super(config, HEADER_COUNT);
 
     tables = config.getList("table");
     if (tables == null || tables.isEmpty()) {
-      throw new IOException("No tables found for " + name);
+      throw new LoggerException("No tables found for " + name);
     }
   }
 
+  /**
+   * Return a filename pattern suitable for passing to SimpleDateFormat.
+   * 
+   * @param table logger table 
+   * @return String suitable for SimpleDateFormat
+   */
   public String getFilePattern(String table) {
     final StringBuilder sb = new StringBuilder();
     sb.append("'" + pathRoot + "/" + name + "/'");
@@ -63,6 +72,7 @@ public final class CampbellDataLogger extends DataLogger {
     return filename;
   }
 
+
   /**
    * Retrieve the table iterator
    *
@@ -72,12 +82,26 @@ public final class CampbellDataLogger extends DataLogger {
     return tables.iterator();
   }
 
+ /**
+  * Find a date in the record.
+  * 
+  * @param record record to search
+  * @return the Date found
+  * @throws ParseException when format cannot be parsed
+  */
   protected Date parseDate(CSVRecord record) throws ParseException {
-    return parseDate(record.get(1));
+    String dateString = record.get(DATE_COLUMN);
+    
+    return dateFormat.parse(dateString);
   }
 
-  public Date parseDate(String date) throws ParseException {
-    return dateFormat.parse(date);
+  /**
+   * Find a record number if a record.
+   * 
+   * @param record to search
+   * @return int record number
+   */
+  public int parseRecordNum(CSVRecord record) {
+    return Integer.parseInt(record.get(RECORD_NUM_COLUMN));
   }
-
 }

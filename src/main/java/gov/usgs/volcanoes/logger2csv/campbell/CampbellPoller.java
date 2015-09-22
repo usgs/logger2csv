@@ -1,14 +1,13 @@
 /*
- * I waive copyright and related rights in the this work worldwide
- * through the CC0 1.0 Universal public domain dedication.
- * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ * I waive copyright and related rights in the this work worldwide through the CC0 1.0 Universal
+ * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
 package gov.usgs.volcanoes.logger2csv.campbell;
 
 import gov.usgs.volcanoes.logger2csv.FileDataReader;
 import gov.usgs.volcanoes.logger2csv.FileDataWriter;
-import gov.usgs.volcanoes.logger2csv.Poller;
+import gov.usgs.volcanoes.logger2csv.poller.Poller;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,8 +36,7 @@ public final class CampbellPoller implements Poller {
   /**
    * A Poller class for collecting data from a CompbellScientific data logger.
    * 
-   * @param logger
-   *          The DataLogger to poll
+   * @param logger The DataLogger to poll
    */
   public CampbellPoller(CampbellDataLogger logger) {
     this.logger = logger;
@@ -83,7 +82,7 @@ public final class CampbellPoller implements Poller {
       LOGGER.debug("no data found");
       return;
     }
-    
+
     CSVRecord record = results.next();
     if (recordMatches(record, lastRecordNum)) {
       // do nothing and let the old value fall on the floor
@@ -95,7 +94,16 @@ public final class CampbellPoller implements Poller {
     // write new data
     FileDataWriter fileWriter = new CampbellWriter(logger, table);
     fileWriter.addHeaders(headers);
-    fileWriter.write(results);
+    try {
+      fileWriter.write(results);
+    } catch (ParseException e) {
+      LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
+      return;
+    } catch (IOException e) {
+      LOGGER.error("Cannot write to datafile for {}.{}.", logger.name, table);
+      return;
+    }
+
   }
 
   private ListIterator<CSVRecord> retrieveNewData(String table, int lastRecordNum)
@@ -109,8 +117,8 @@ public final class CampbellPoller implements Poller {
     return results;
   }
 
-  private boolean recordMatches(CSVRecord recordString, int recordNum) {
-    if (Integer.parseInt(recordString.get(1)) == recordNum)
+  private boolean recordMatches(CSVRecord record, int recordNum) {
+    if (logger.parseRecordNum(record) == recordNum)
       return true;
     else
       return false;
@@ -153,7 +161,7 @@ public final class CampbellPoller implements Poller {
 
     // String url = sb.toString();
     URL url = new URL(sb.toString());
-    
+
     LOGGER.debug("Polling from {}", url);
     CSVParser parser = CSVParser.parse(url, StandardCharsets.UTF_8, logger.csvFormat);
     ListIterator<CSVRecord> iterator = parser.getRecords().listIterator();

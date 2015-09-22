@@ -6,6 +6,8 @@
 
 package gov.usgs.volcanoes.logger2csv;
 
+import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
+
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
