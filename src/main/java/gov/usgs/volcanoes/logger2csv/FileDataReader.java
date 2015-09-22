@@ -37,7 +37,7 @@ public class FileDataReader {
     LOGGER.debug("Finding last record for {}", logger.name);
 
     File recentFile = findRecentFile(fileNamePattern);
-    if (recentFile == null)
+    if (recentFile == null || !recentFile.exists())
       return null;
 
     CSVParser parser = CSVParser.parse(recentFile, StandardCharsets.UTF_8, logger.csvFormat);
@@ -53,6 +53,7 @@ public class FileDataReader {
   }
 
   private File findRecentFile(String fileNamePattern) {
+    LOGGER.error("Pattern '{}'",fileNamePattern);
     SimpleDateFormat dateFormat = new SimpleDateFormat(fileNamePattern);
 
     long timeMs = System.currentTimeMillis();
@@ -63,7 +64,10 @@ public class FileDataReader {
       File file = new File(fileName);
       if (file.exists()) {
         return file;
+      } else {
+        LOGGER.debug("didn't find: {}", fileName);
       }
+      timeMs -= DAY_TO_MS;
     }
     return null;
   }

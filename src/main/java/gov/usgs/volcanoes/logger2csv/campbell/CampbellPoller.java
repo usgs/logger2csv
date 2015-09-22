@@ -28,7 +28,7 @@ import java.util.ListIterator;
  * 
  * @author Tom Parker
  */
-public class CampbellPoller implements Poller {
+public final class CampbellPoller implements Poller {
   private static final Logger LOGGER = LoggerFactory.getLogger(CampbellPoller.class);
 
   private final CampbellDataLogger logger;
@@ -61,6 +61,7 @@ public class CampbellPoller implements Poller {
     LOGGER.debug("Polling {}.{}", logger.name, table);
 
     int lastRecordNum = findLastRecordNum(table);
+    LOGGER.debug("Last record: {}", lastRecordNum);
 
     ListIterator<CSVRecord> results;
     try {
@@ -78,6 +79,11 @@ public class CampbellPoller implements Poller {
 
     List<CSVRecord> headers = extractHeaders(results);
 
+    if (!results.hasNext()) {
+      LOGGER.debug("no data found");
+      return;
+    }
+    
     CSVRecord record = results.next();
     if (recordMatches(record, lastRecordNum)) {
       // do nothing and let the old value fall on the floor
@@ -104,7 +110,7 @@ public class CampbellPoller implements Poller {
   }
 
   private boolean recordMatches(CSVRecord recordString, int recordNum) {
-    if (Integer.parseInt(recordString.get(0)) == recordNum)
+    if (Integer.parseInt(recordString.get(1)) == recordNum)
       return true;
     else
       return false;
@@ -113,7 +119,13 @@ public class CampbellPoller implements Poller {
   private int findLastRecordNum(String table) throws IOException {
     FileDataReader fileReader = new FileDataReader(logger);
     CSVRecord lastRecord = fileReader.findLastRecord(logger.getFilePattern(table));
-    return Integer.parseInt(lastRecord.get(1));
+    if (lastRecord == null) {
+      LOGGER.debug("No recent data file was found.");
+      return -1;
+    } else {
+      LOGGER.debug("Most recent record num is {}", lastRecord.get(1));
+      return Integer.parseInt(lastRecord.get(1));
+    }
   }
 
   private ListIterator<CSVRecord> since_record(int record, String table) throws IOException {
@@ -141,6 +153,8 @@ public class CampbellPoller implements Poller {
 
     // String url = sb.toString();
     URL url = new URL(sb.toString());
+    
+    LOGGER.debug("Polling from {}", url);
     CSVParser parser = CSVParser.parse(url, StandardCharsets.UTF_8, logger.csvFormat);
     ListIterator<CSVRecord> iterator = parser.getRecords().listIterator();
 

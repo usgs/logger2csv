@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.nio.file.FileAlreadyExistsException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,7 @@ public class Logger2csv {
    * Poll each configured logger once
    */
   public void pollAllOnce() {
+    LOGGER.debug("Polling all loggers");
     for (Poller p : pollers) {
       p.updateFiles();
     }
@@ -108,11 +110,13 @@ public class Logger2csv {
     // Parse the command line
     try {
       cmdLineArgs = new Logger2csvArgs(args);
+    } catch (FileAlreadyExistsException e) {
+      LOGGER.error("I will not overwrite an exissting config file. Please stash logger2csv.config somewhere safe before creating an example config. (" + e + ")");
     } catch (Exception e) {
-      LOGGER.error("Cannot parse command line. (" + e.getLocalizedMessage() + ")");
+      LOGGER.error("Cannot parse command line. (" + e + ")");
     }
 
-    if (cmdLineArgs == null) {
+    if (cmdLineArgs == null || !cmdLineArgs.runnable) {
       System.exit(1);
     }
 
@@ -121,7 +125,7 @@ public class Logger2csv {
     try {
       cf = new ConfigFile(cmdLineArgs.configFileName);
     } catch (FileNotFoundException e) {
-      LOGGER.warn(
+      LOGGER.error(
           "Can't parse config file " + cmdLineArgs.configFileName + ". Try using the --help flag.");
     }
 

@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Tom Parker
  */
-public class CampbellDataLogger extends DataLogger {
+public final class CampbellDataLogger extends DataLogger {
   public static final int DATE_COLUMN = 0;
 
   public static final String DATE_FORMAT_STRING = "yyyy-MM-dd hh:mm:ss";
@@ -55,9 +55,9 @@ public class CampbellDataLogger extends DataLogger {
   public String getFilePattern(String table) {
     final StringBuilder sb = new StringBuilder();
     sb.append("'" + pathRoot + "/" + name + "/'");
-    sb.append(filePathFormat);
+    sb.append(filePathFormat.toPattern());
     sb.append("'/" + name + "-" + table + "'");
-    sb.append(fileSuffixFormat);
+    sb.append(fileSuffixFormat.toPattern());
 
     final String filename = sb.toString().replace('/', File.separatorChar);
     return filename;

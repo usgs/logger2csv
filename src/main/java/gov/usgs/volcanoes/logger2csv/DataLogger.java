@@ -31,7 +31,7 @@ public abstract class DataLogger {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
   public static final String DEFAULT_FILE_PATH_FORMAT = "yyyy/MM";
-  public static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd";
+  public static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd'.csv'";
   public static final String DEFAULT_PATH_ROOT = "data";
   public static final int DEFAULT_BACKFILL = 2;
   public static final boolean DEFAULT_QUOTE_FIELDS = false;

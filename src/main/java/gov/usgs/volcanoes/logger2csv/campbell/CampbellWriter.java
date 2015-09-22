@@ -20,7 +20,7 @@ import java.util.Date;
  * 
  * @author Tom Parker
  */
-public class CampbellWriter extends FileDataWriter {
+public final class CampbellWriter extends FileDataWriter {
 
   private final SimpleDateFormat loggerDateFormat;
   private final SimpleDateFormat fileDateFormat;

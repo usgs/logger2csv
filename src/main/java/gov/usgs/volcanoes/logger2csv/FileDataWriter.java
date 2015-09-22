@@ -30,8 +30,6 @@ import java.util.List;
  */
 public abstract class FileDataWriter {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
-  public static final String FILE_EXTENSION = ".csv";
-
 
   private final List<CSVRecord> headers;
   private final CSVFormat csvFormat;
@@ -49,7 +47,7 @@ public abstract class FileDataWriter {
     this.csvFormat = csvFormat;
   }
 
-  public void write(Iterator<CSVRecord> results) {
+  public final void write(Iterator<CSVRecord> results) {
     File workingFile = null;
     CSVPrinter printer = null;
 
@@ -58,6 +56,7 @@ public abstract class FileDataWriter {
       File thisFile = null;
       try {
         thisFile = getFile(record);
+        LOGGER.debug("working file: {}", thisFile);
       } catch (ParseException e) {
         if (printer != null) {
           LOGGER.error("Unable to parse record. ({})", e.getLocalizedMessage());
@@ -103,6 +102,7 @@ public abstract class FileDataWriter {
       FileWriter writer = new FileWriter(workingFile);
       printer = new CSVPrinter(writer, csvFormat);
     } else {
+      workingFile.getParentFile().mkdirs();
       FileWriter writer = new FileWriter(workingFile, true);
       printer = new CSVPrinter(writer, csvFormat);
       printer.printRecords(headers);
@@ -111,11 +111,11 @@ public abstract class FileDataWriter {
     return printer;
   }
 
-  public void addHeader(CSVRecord header) {
+  public final void addHeader(CSVRecord header) {
     headers.add(header);
   }
 
-  public void addHeaders(List<CSVRecord> headerList) {
+  public final void addHeaders(List<CSVRecord> headerList) {
     headers.addAll(headerList);
   }
 

@@ -310,8 +310,8 @@
     </site>
   </distributionManagement>
   <properties>
-    <version.template.file>src/main/resources/Logger2csvVersion.java.template</version.template.file>
-    <version.file>src/main/java/gov/usgs/volcanoes/logger2csv/Logger2csvVersion.java</version.file>
+    <version.template.file>src/main/resources/Version.java.template</version.template.file>
+    <version.file>src/main/java/gov/usgs/volcanoes/logger2csv/Version.java</version.file>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 </project>

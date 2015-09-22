@@ -35,7 +35,13 @@ public final class PollerFactory {
   
   public static Poller getPoller(ConfigFile config) throws IOException, ParseException {
     Poller poller = null;
-    LoggerType type = LoggerType.valueOf(config.getString("type"));
+    LoggerType type;
+    try {
+      type = LoggerType.valueOf(config.getString("type").toUpperCase());
+    } catch (IllegalArgumentException e) {
+      throw new ParseException("Cannot find logger type.", -1);
+    }
+    
     switch (type) {
       case CAMPBELL:
         CampbellDataLogger logger = new CampbellDataLogger(config);
