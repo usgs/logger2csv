@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2015</copyright>
     <item>
-      <title>File: 9,
-             Errors: 228,
+      <title>File: 13,
+             Errors: 267,
              Warnings: 0,
              Infos: 0
       </title>
@@ -46,7 +46,7 @@ under the License.
           <tbody>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.Logger2csvVersion.java">gov/usgs/volcanoes/logger2csv/Logger2csvVersion.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.DataLogger.java">gov/usgs/volcanoes/logger2csv/DataLogger.java</a>
                 </td>
                 <td>
                   0
@@ -55,12 +55,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  12
+                  47
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.WebDataReader.java">gov/usgs/volcanoes/logger2csv/WebDataReader.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.FileDataReader.java">gov/usgs/volcanoes/logger2csv/FileDataReader.java</a>
                 </td>
                 <td>
                   0
@@ -69,7 +69,49 @@ under the License.
                   0
                 </td>
                 <td>
-                  35
+                  16
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.campbell.CampbellDataLogger.java">gov/usgs/volcanoes/logger2csv/campbell/CampbellDataLogger.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  24
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.campbell.CampbellPoller.java">gov/usgs/volcanoes/logger2csv/campbell/CampbellPoller.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  46
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.FileDataWriter.java">gov/usgs/volcanoes/logger2csv/FileDataWriter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  30
                 </td>
               </tr>
                           <tr>
@@ -83,12 +125,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  41
+                  22
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.DataLogger.java">gov/usgs/volcanoes/logger2csv/DataLogger.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.Poller.java">gov/usgs/volcanoes/logger2csv/Poller.java</a>
                 </td>
                 <td>
                   0
@@ -97,12 +139,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  49
+                  10
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#log4j.properties">log4j.properties</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.Version.java">gov/usgs/volcanoes/logger2csv/Version.java</a>
                 </td>
                 <td>
                   0
@@ -111,7 +153,35 @@ under the License.
                   0
                 </td>
                 <td>
-                  1
+                  12
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.Logger2csvArgs.java">gov/usgs/volcanoes/logger2csv/Logger2csvArgs.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  25
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.PollerFactory.java">gov/usgs/volcanoes/logger2csv/PollerFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
                 </td>
               </tr>
                           <tr>
@@ -130,7 +200,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.FileDataWriter.java">gov/usgs/volcanoes/logger2csv/FileDataWriter.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.campbell.CampbellWriter.java">gov/usgs/volcanoes/logger2csv/campbell/CampbellWriter.java</a>
                 </td>
                 <td>
                   0
@@ -139,12 +209,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  39
+                  14
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.Logger2csvArgs.java">gov/usgs/volcanoes/logger2csv/Logger2csvArgs.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#log4j.properties">log4j.properties</a>
                 </td>
                 <td>
                   0
@@ -153,21 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  27
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.FileDataReader.java">gov/usgs/volcanoes/logger2csv/FileDataReader.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  23
+                  1
                 </td>
               </tr>
                       </tbody>
