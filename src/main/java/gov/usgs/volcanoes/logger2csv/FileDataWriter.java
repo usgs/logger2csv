@@ -105,6 +105,10 @@ public abstract class FileDataWriter {
       }
 
       // new file?
+      if (thisFile == null) {
+        throw new RuntimeException("Unable to determine file for record.");
+      }
+      
       if (!thisFile.equals(workingFile)) {
         workingFile = thisFile;
         if (printer != null) {
