@@ -1,7 +1,6 @@
 /*
- * I waive copyright and related rights in the this work worldwide
- * through the CC0 1.0 Universal public domain dedication.
- * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ * I waive copyright and related rights in the this work worldwide through the CC0 1.0 Universal
+ * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
 package gov.usgs.volcanoes.logger2csv;
@@ -46,6 +45,13 @@ public class FileDataReader {
     Iterator<CSVRecord> iterator = parser.iterator();
 
     // demand files have at least one record if they exist.
+    if (!iterator.hasNext()) {
+      String message = String.format(
+          "The most recent data file has no records, remove it before proceeding. (%s)",
+          recentFile);
+        throw new RuntimeException(message);
+    }
+
     CSVRecord record = iterator.next();
 
     while (iterator.hasNext()) {
@@ -55,7 +61,7 @@ public class FileDataReader {
   }
 
   private File findRecentFile(String fileNamePattern) {
-    LOGGER.error("Pattern '{}'",fileNamePattern);
+    LOGGER.error("Pattern '{}'", fileNamePattern);
     SimpleDateFormat dateFormat = new SimpleDateFormat(fileNamePattern);
 
     long timeMs = System.currentTimeMillis();
