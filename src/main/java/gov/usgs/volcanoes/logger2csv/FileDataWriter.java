@@ -131,14 +131,15 @@ public abstract class FileDataWriter {
   }
 
   
-  private CSVPrinter getPrinter(File workingFile) throws IOException {
+  private CSVPrinter getPrinter(File file) throws IOException {
     CSVPrinter printer;
-    if (workingFile.exists()) {
-      final FileWriter writer = new FileWriter(workingFile);
+    
+    if (file.exists()) {
+      final FileWriter writer = new FileWriter(file, true);
       printer = new CSVPrinter(writer, csvFormat);
     } else {
-      workingFile.getParentFile().mkdirs();
-      final FileWriter writer = new FileWriter(workingFile, true);
+      file.getParentFile().mkdirs();
+      final FileWriter writer = new FileWriter(file);
       printer = new CSVPrinter(writer, csvFormat);
       printer.printRecords(headers);
     }
