@@ -1,7 +1,6 @@
 /*
- * I waive copyright and related rights in the this work worldwide
- * through the CC0 1.0 Universal public domain dedication.
- * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ * I waive copyright and related rights in the this work worldwide through the CC0 1.0 Universal
+ * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
 package gov.usgs.volcanoes.logger2csv.campbell;
@@ -13,7 +12,6 @@ import gov.usgs.volcanoes.logger2csv.logger.LoggerException;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
@@ -25,16 +23,16 @@ import java.util.List;
  * @author Tom Parker
  */
 public final class CampbellDataLogger extends DataLogger {
-  
+
   /** column index of date field */
   public static final int DATE_COLUMN = 0;
-  
+
   /** column index of record number */
   public static final int RECORD_NUM_COLUMN = 1;
-  
+
   /** format of date field */
   public static final String DATE_FORMAT_STRING = "yyyy-MM-dd hh:mm:ss";
-  
+
   /** number of header lines */
   public static final int HEADER_COUNT = 4;
 
@@ -58,7 +56,7 @@ public final class CampbellDataLogger extends DataLogger {
   /**
    * Return a filename pattern suitable for passing to SimpleDateFormat.
    * 
-   * @param table logger table 
+   * @param table logger table
    * @return String suitable for SimpleDateFormat
    */
   public String getFilePattern(String table) {
@@ -82,16 +80,16 @@ public final class CampbellDataLogger extends DataLogger {
     return tables.iterator();
   }
 
- /**
-  * Find a date in the record.
-  * 
-  * @param record record to search
-  * @return the Date found
-  * @throws ParseException when format cannot be parsed
-  */
+  /**
+   * Find a date in the record.
+   * 
+   * @param record record to search
+   * @return the Date found
+   * @throws ParseException when format cannot be parsed
+   */
   protected Date parseDate(CSVRecord record) throws ParseException {
     String dateString = record.get(DATE_COLUMN);
-    
+
     return dateFormat.parse(dateString);
   }
 

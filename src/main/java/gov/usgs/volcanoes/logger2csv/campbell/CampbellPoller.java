@@ -8,6 +8,7 @@ package gov.usgs.volcanoes.logger2csv.campbell;
 import gov.usgs.volcanoes.logger2csv.FileDataReader;
 import gov.usgs.volcanoes.logger2csv.FileDataWriter;
 import gov.usgs.volcanoes.logger2csv.poller.Poller;
+import gov.usgs.volcanoes.logger2csv.poller.PollerException;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -49,14 +50,14 @@ public final class CampbellPoller implements Poller {
       String table = tableIt.next();
       try {
         updateTable(table);
-      } catch (IOException e) {
+      } catch (PollerException e) {
         LOGGER.error("Unable to update {}.{}, I'll try again next time. ({})", logger.name, table,
             e.getLocalizedMessage());
       }
     }
   }
 
-  private void updateTable(String table) throws IOException {
+  private void updateTable(String table) throws PollerException {
     LOGGER.debug("Polling {}.{}", logger.name, table);
 
     int lastRecordNum = findLastRecordNum(table);
@@ -124,7 +125,7 @@ public final class CampbellPoller implements Poller {
       return false;
   }
 
-  private int findLastRecordNum(String table) throws IOException {
+  private int findLastRecordNum(String table) throws PollerException {
     FileDataReader fileReader = new FileDataReader(logger);
     CSVRecord lastRecord = fileReader.findLastRecord(logger.getFilePattern(table));
     if (lastRecord == null) {

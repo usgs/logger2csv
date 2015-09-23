@@ -84,8 +84,8 @@ public abstract class FileDataWriter {
    * Write records to daily CSV files
    *
    * @param records records to write
-   * @throws ParseException
-   * @throws IOException
+   * @throws ParseException file pattern cannot be parsed
+   * @throws IOException file cannot be accessed
    */
   public final void write(Iterator<CSVRecord> records) throws ParseException, IOException {
     File workingFile = null;

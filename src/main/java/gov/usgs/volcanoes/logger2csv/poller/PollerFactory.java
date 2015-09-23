@@ -9,9 +9,6 @@ import gov.usgs.volcanoes.core.configfile.ConfigFile;
 import gov.usgs.volcanoes.logger2csv.campbell.CampbellDataLogger;
 import gov.usgs.volcanoes.logger2csv.campbell.CampbellPoller;
 
-import java.io.IOException;
-import java.text.ParseException;
-
 /**
  * Provide the appropriate Poller class.
  * 

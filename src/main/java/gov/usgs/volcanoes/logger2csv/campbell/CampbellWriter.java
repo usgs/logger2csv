@@ -29,7 +29,8 @@ public final class CampbellWriter extends FileDataWriter {
   /**
    * Constructor.
    * 
-   * @param filePattern Patter used to create filenames
+   * @param logger Data logger model
+   * @param table Table being polled
    */
   public CampbellWriter(CampbellDataLogger logger, String table) {
     super(logger.csvFormat);

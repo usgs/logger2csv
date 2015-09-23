@@ -6,6 +6,7 @@
 package gov.usgs.volcanoes.logger2csv;
 
 import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
+import gov.usgs.volcanoes.logger2csv.poller.PollerException;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -30,18 +31,35 @@ public class FileDataReader {
 
   private final DataLogger logger;
 
+  /**
+   * Constructor.
+   * 
+   * @param logger my data logger
+   */
   public FileDataReader(DataLogger logger) {
     this.logger = logger;
   }
 
-  public CSVRecord findLastRecord(String fileNamePattern) throws IOException {
+  /**
+   * Retrieve the most recent record I have for this logger.
+   * 
+   * @param fileNamePattern Pattern used to create file names
+   * @return the most recent record
+   * @throws PollerException when things go wrong
+   */
+  public CSVRecord findLastRecord(String fileNamePattern) throws PollerException {
     LOGGER.debug("Finding last record for {}", logger.name);
 
     File recentFile = findRecentFile(fileNamePattern);
     if (recentFile == null || !recentFile.exists())
       return null;
 
-    CSVParser parser = CSVParser.parse(recentFile, StandardCharsets.UTF_8, logger.csvFormat);
+    CSVParser parser;
+    try {
+      parser = CSVParser.parse(recentFile, StandardCharsets.UTF_8, logger.csvFormat);
+    } catch (IOException e) {
+      throw new PollerException(e);
+    }
     Iterator<CSVRecord> iterator = parser.iterator();
 
     // demand files have at least one record if they exist.
@@ -49,7 +67,7 @@ public class FileDataReader {
       String message = String.format(
           "The most recent data file has no records, remove it before proceeding. (%s)",
           recentFile);
-        throw new RuntimeException(message);
+      throw new PollerException(message);
     }
 
     CSVRecord record = iterator.next();

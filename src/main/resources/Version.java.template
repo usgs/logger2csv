@@ -6,11 +6,20 @@
 
 package gov.usgs.volcanoes.logger2csv;
 
+/**
+ * Provide programatic access to build info.
+ * 
+ * @author Tom Parker
+ *
+ */
 public final class Version {
 
+  /** Time build was created. */
     public static final String BUILD_TIME="@buildtime@";
 
+    /** Version number taken from pom.xml at build time. */
     public static final String POM_VERSION="@pomversion@";
 
+    /** Friendly string combining version and date info. */
 	public static final String VERSION_STRING = "Version: " + POM_VERSION + " Built: " + BUILD_TIME;
 }
