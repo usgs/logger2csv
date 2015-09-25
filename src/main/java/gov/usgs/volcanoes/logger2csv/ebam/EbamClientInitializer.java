@@ -3,19 +3,13 @@ package gov.usgs.volcanoes.logger2csv.ebam;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
-import io.netty.handler.ssl.SslContext;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.util.CharsetUtil;
 
 public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
-  
-      private static final StringDecoder DECODER = new StringDecoder();
-      private static final StringEncoder ENCODER = new StringEncoder();
-  
-      private static final EbamClientHandler CLIENT_HANDLER = new EbamClientHandler();
-  
   
       public EbamClientInitializer() {
       }
@@ -24,12 +18,13 @@ public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
       public void initChannel(SocketChannel ch) {
           ChannelPipeline pipeline = ch.pipeline();
   
-          // Add the text line codec combination first,
-          pipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
-          pipeline.addLast(DECODER);
-          pipeline.addLast(ENCODER);
+          // Decoders
+          pipeline.addLast(new LineBasedFrameDecoder(8192));
+          pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+          pipeline.addLast("readTimeoutHandler", new ReadTimeoutHandler(10));
+          pipeline.addLast(new EbamHandler());
   
-          // and then business logic.
-          pipeline.addLast(CLIENT_HANDLER);
+          //Encoders
+          pipeline.addLast(new StringEncoder());
       }
   }

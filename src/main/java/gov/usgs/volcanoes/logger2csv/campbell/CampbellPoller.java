@@ -152,6 +152,7 @@ public final class CampbellPoller implements Poller {
     StringBuilder sb = new StringBuilder();
     sb.append("http://");
     sb.append(logger.address);
+    sb.append(":" + logger.port);
     sb.append("/?command=DataQuery&uri=dl:");
     sb.append(table);
     sb.append("&mode=");

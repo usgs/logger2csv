@@ -47,6 +47,9 @@ public abstract class DataLogger {
   /** Default CSV format. */
   public static final CSVFormat DEFAULT_CSV_FORMAT = CSVFormat.RFC4180;
 
+  /** DEFAULT TCP PORT */
+  public static final int DEFAULT_PORT = 80;
+  
   /** My name. */
   public final String name;
 
@@ -58,6 +61,9 @@ public abstract class DataLogger {
 
   /** Address of logger */
   public final String address;
+
+  /** TCP port logger is listening on */
+  public final int port;
 
   /** Number of header rows */
   public final int headerCount;
@@ -90,6 +96,7 @@ public abstract class DataLogger {
     if (address == null)
       throw new LoggerException("Station address must be specified in Config.");
 
+    port = config.getInt("port", DEFAULT_PORT);
     backfill = config.getInt("backfill", DEFAULT_BACKFILL);
     pathRoot = config.getString("pathRoot", DEFAULT_PATH_ROOT);
 
