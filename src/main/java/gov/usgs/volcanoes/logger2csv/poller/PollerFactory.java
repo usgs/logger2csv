@@ -8,6 +8,8 @@ package gov.usgs.volcanoes.logger2csv.poller;
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
 import gov.usgs.volcanoes.logger2csv.campbell.CampbellDataLogger;
 import gov.usgs.volcanoes.logger2csv.campbell.CampbellPoller;
+import gov.usgs.volcanoes.logger2csv.ebam.EbamDataLogger;
+import gov.usgs.volcanoes.logger2csv.ebam.EbamPoller;
 
 /**
  * Provide the appropriate Poller class.
@@ -30,6 +32,7 @@ public final class PollerFactory {
 
   /**
    * Return an appropriate initialized Poller.
+   * 
    * @param config config stanza for one logger
    * @return an appropriate initialized Poller
    * @throws PollerException when Poller cannot be created
@@ -45,13 +48,19 @@ public final class PollerFactory {
 
     switch (type) {
       case CAMPBELL:
-        CampbellDataLogger logger;
         try {
-          logger = new CampbellDataLogger(config);
+          poller = new CampbellPoller(new CampbellDataLogger(config));
         } catch (Exception e) {
           throw new PollerException(e);
         }
-        poller = new CampbellPoller(logger);
+
+        break;
+      case EBAM:
+        try {
+          poller = new EbamPoller(new EbamDataLogger(config));
+        } catch (Exception e) {
+          throw new PollerException(e);
+        }
         break;
       default:
         throw new UnsupportedOperationException("Unknown type: " + type);

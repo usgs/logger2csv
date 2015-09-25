@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -26,20 +27,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public final class EbamPoller implements Poller {
   private static final Logger LOGGER = LoggerFactory.getLogger(EbamPoller.class);
   private static final char ESC = 0x1b;
-
-  private static enum DataFile {
-    EEPROM('E'), CHANNEL_DESCRIPTOR('1'), DATA_LOG('2'), ERROR_LOG('3'), DIAG_LOG('4');
-
-    private char value;
-
-    DataFile(char value) {
-      this.value = value;
-    }
-
-    public String toString() {
-      return String.valueOf(value);
-    }
-  }
 
   private final EbamDataLogger logger;
 
@@ -65,11 +52,13 @@ public final class EbamPoller implements Poller {
     EventLoopGroup group = new NioEventLoopGroup();
     try {
       Bootstrap b = new Bootstrap();
-      b.group(group).channel(NioSocketChannel.class).handler(new EbamClientInitializer());
+      ChannelHandler handler = new EbamClientInitializer(logger, dataFile);
+      b.group(group).channel(NioSocketChannel.class).handler(handler);
 
       Channel ch;
       try {
         ch = b.connect(logger.address, logger.port).sync().channel();
+//        ch.pipeline().addLast(new EbamHandler(logger, dataFile));
       } catch (InterruptedException e) {
         throw new PollerException(e);
       }
