@@ -7,6 +7,7 @@ package gov.usgs.volcanoes.logger2csv.campbell;
 
 import gov.usgs.volcanoes.logger2csv.FileDataReader;
 import gov.usgs.volcanoes.logger2csv.FileDataWriter;
+import gov.usgs.volcanoes.logger2csv.logger.LoggerRecord;
 import gov.usgs.volcanoes.logger2csv.poller.Poller;
 import gov.usgs.volcanoes.logger2csv.poller.PollerException;
 
@@ -20,6 +21,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -58,29 +60,18 @@ public final class CampbellPoller implements Poller {
   }
 
   private void updateTable(String table) throws PollerException {
-    LOGGER.debug("Polling {}.{}", logger.name, table);
-
     int lastRecordNum = findLastRecordNum(table);
-    LOGGER.debug("Last record: {}", lastRecordNum);
-
-    ListIterator<CSVRecord> results;
-    try {
-      results = retrieveNewData(table, lastRecordNum);
-    } catch (IOException e) {
-      LOGGER.error("Cannot retrieve data from {}.{}, I'll try again next time. ({})", logger.name,
-          table, e.getLocalizedMessage());
-      return;
-    }
+    ListIterator<CSVRecord> results = retrieveNewData(table, lastRecordNum);
 
     if (!results.hasNext()) {
-      LOGGER.info("No new data found in table {}.{}", logger.name, table);
+      LOGGER.info("No response when polling {}.{}", logger.name, table);
       return;
     }
 
     List<CSVRecord> headers = extractHeaders(results);
-
+    
     if (!results.hasNext()) {
-      LOGGER.debug("no data found");
+      LOGGER.debug("No new data in table {}.{}", logger.name, table);
       return;
     }
 
@@ -92,11 +83,18 @@ public final class CampbellPoller implements Poller {
       results.previous();
     }
 
+    if (!results.hasNext()) {
+      LOGGER.debug("no data found");
+      return;
+    }
+
+    List<LoggerRecord> records = extractRecords(results);
+
     // write new data
-    FileDataWriter fileWriter = new CampbellWriter(logger, table);
+    FileDataWriter fileWriter = new FileDataWriter(logger.csvFormat, logger.getFilePattern(table));
     fileWriter.addHeaders(headers);
     try {
-      fileWriter.write(results);
+      fileWriter.write(records.iterator());
     } catch (ParseException e) {
       LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
       return;
@@ -108,7 +106,9 @@ public final class CampbellPoller implements Poller {
   }
 
   private ListIterator<CSVRecord> retrieveNewData(String table, int lastRecordNum)
-      throws IOException {
+      throws PollerException {
+    LOGGER.debug("Polling {}.{}", logger.name, table);
+
     ListIterator<CSVRecord> results;
     if (lastRecordNum > 0)
       results = since_record(lastRecordNum, table);
@@ -137,18 +137,18 @@ public final class CampbellPoller implements Poller {
     }
   }
 
-  private ListIterator<CSVRecord> since_record(int record, String table) throws IOException {
+  private ListIterator<CSVRecord> since_record(int record, String table) throws PollerException {
     LOGGER.info("Downloading new records from {}.{}.", logger.name, table);
     return getResults("since-record", record, table);
   }
 
-  private ListIterator<CSVRecord> backFill(int backfillS, String table) throws IOException {
+  private ListIterator<CSVRecord> backFill(int backfillS, String table) throws PollerException {
     LOGGER.info("Downloading all recent records from {}.{}.", logger.name, table);
     return getResults("backfill", backfillS, table);
   }
 
   private ListIterator<CSVRecord> getResults(final String mode, final int p1, String table)
-      throws IOException {
+      throws PollerException {
     StringBuilder sb = new StringBuilder();
     sb.append("http://");
     sb.append(logger.address);
@@ -161,14 +161,19 @@ public final class CampbellPoller implements Poller {
     sb.append("&p1=");
     sb.append(p1);
 
-    // String url = sb.toString();
-    URL url = new URL(sb.toString());
+    List<CSVRecord> records = null;
+    try {
+      // String url = sb.toString();
+      URL url = new URL(sb.toString());
 
-    LOGGER.debug("Polling from {}", url);
-    CSVParser parser = CSVParser.parse(url, StandardCharsets.UTF_8, logger.csvFormat);
-    ListIterator<CSVRecord> iterator = parser.getRecords().listIterator();
+      LOGGER.debug("Polling from {}", url);
+      CSVParser parser = CSVParser.parse(url, StandardCharsets.UTF_8, logger.csvFormat);
+      records = parser.getRecords();
+    } catch (IOException e) {
+      throw new PollerException(e);
+    }
 
-    return iterator;
+    return records.listIterator();
   }
 
   private List<CSVRecord> extractHeaders(Iterator<CSVRecord> iterator) {
@@ -180,5 +185,19 @@ public final class CampbellPoller implements Poller {
     }
 
     return headers;
+  }
+
+  private List<LoggerRecord> extractRecords(Iterator<CSVRecord> iterator) {
+    List<LoggerRecord> records = new ArrayList<LoggerRecord>();
+    while (iterator.hasNext()) {
+      CSVRecord record = iterator.next();
+      try {
+        records.add(new LoggerRecord(logger.parseDate(record).getTime(), record));
+      } catch (ParseException e) {
+        LOGGER.info("Discarding unparsable record. ({})", record);
+      }
+    }
+    return records;
+
   }
 }

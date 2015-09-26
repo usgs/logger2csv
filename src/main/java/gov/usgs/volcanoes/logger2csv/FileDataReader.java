@@ -79,7 +79,6 @@ public class FileDataReader {
   }
 
   private File findRecentFile(String fileNamePattern) {
-    LOGGER.error("Pattern '{}'", fileNamePattern);
     SimpleDateFormat dateFormat = new SimpleDateFormat(fileNamePattern);
 
     long timeMs = System.currentTimeMillis();

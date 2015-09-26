@@ -5,6 +5,8 @@
 
 package gov.usgs.volcanoes.logger2csv;
 
+import gov.usgs.volcanoes.logger2csv.logger.LoggerRecord;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -16,6 +18,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -27,39 +30,24 @@ import java.util.List;
  * @author Tom Parker
  *
  */
-public abstract class FileDataWriter {
+public class FileDataWriter {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
   private final CSVFormat csvFormat;
+  private final SimpleDateFormat fileNamePattern;
   private final List<CSVRecord> headers;
 
   /**
    * Constructor.
+   * 
    * @param csvFormat CSVFormat of file on disk
    *
    */
-  public FileDataWriter(CSVFormat csvFormat) {
+  public FileDataWriter(CSVFormat csvFormat, String fileNamePattern) {
     headers = new ArrayList<CSVRecord>();
     this.csvFormat = csvFormat;
+    this.fileNamePattern = new SimpleDateFormat(fileNamePattern);
   }
-
-  /**
-   * Find a Date in a CSV record.
-   *
-   * @param record Record to search
-   * @return the Date
-   * @throws ParseException when format cannot be parsed
-   */
-  abstract protected Date getDate(CSVRecord record) throws ParseException;
-
-  /**
-   * Create a filename to hold a CSV record CSV record.
-   *
-   * @param record Record to be stored
-   * @return the name of the file
-   * @throws ParseException when format cannot be parsed
-   */
-  abstract protected File getFile(CSVRecord record) throws ParseException;
 
 
   /**
@@ -87,28 +75,16 @@ public abstract class FileDataWriter {
    * @throws ParseException file pattern cannot be parsed
    * @throws IOException file cannot be accessed
    */
-  public final void write(Iterator<CSVRecord> records) throws ParseException, IOException {
+  public final void write(Iterator<LoggerRecord> records) throws ParseException, IOException {
     File workingFile = null;
     CSVPrinter printer = null;
 
     while (records.hasNext()) {
-      final CSVRecord record = records.next();
+      final LoggerRecord record = records.next();
       File thisFile = null;
-      try {
-        thisFile = getFile(record);
-        LOGGER.debug("working file: {}", thisFile);
-      } catch (final ParseException e) {
-        if (printer != null) {
-          close(printer);
-          throw e;
-        }
-      }
+      thisFile = new File(fileNamePattern.format(new Date(record.date)));
+      LOGGER.debug("working file: {}", thisFile);
 
-      // new file?
-      if (thisFile == null) {
-        throw new RuntimeException("Unable to determine file for record.");
-      }
-      
       if (!thisFile.equals(workingFile)) {
         workingFile = thisFile;
         if (printer != null) {
@@ -122,11 +98,12 @@ public abstract class FileDataWriter {
           throw e;
         }
       }
-      
-      printer.printRecord(record);
+
+      printer.printRecord(record.record);
     }
+
   }
-  
+
   private void close(Closeable open) {
     try {
       open.close();
@@ -134,10 +111,10 @@ public abstract class FileDataWriter {
     }
   }
 
-  
+
   private CSVPrinter getPrinter(File file) throws IOException {
     CSVPrinter printer;
-    
+
     if (file.exists()) {
       final FileWriter writer = new FileWriter(file, true);
       printer = new CSVPrinter(writer, csvFormat);
