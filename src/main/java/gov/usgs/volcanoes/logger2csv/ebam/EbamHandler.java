@@ -22,11 +22,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class EbamHandler extends SimpleChannelInboundHandler<String> {
   private static final Logger LOGGER = LoggerFactory.getLogger(EbamHandler.class);
 
+  private static final int HEADER_COUNT = 6;
   private EbamDataLogger logger;
   private DataFile dataFile;
   private List<CSVRecord> records;
   private CSVParser parser;
   private PipedWriter writer;
+  private int recordIndex = -1;
+private int headersFound = 0;
 
   public EbamHandler(EbamDataLogger logger, DataFile dataFile) throws IOException {
     this.logger = logger;
@@ -37,7 +40,19 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, String msg) throws IOException {
-    writer.write(msg);
+    LOGGER.debug("Recieved record: {}", msg.replace((char)0x1b, '`'));
+    
+    
+    // Record index "RF3 R 32 L 32 X0750"
+    if (recordIndex == -1 && msg.matches("RF. R \\d+")) {
+      recordIndex = Integer.parseInt(msg.split("\\s+")[2]);
+      LOGGER.debug("Found record index {}", recordIndex);
+    } else if (headersFound < HEADER_COUNT){
+      headersFound++;
+    } else {
+      writer.write(msg + "," + recordIndex++);
+    }
+      
   }
 
   @Override

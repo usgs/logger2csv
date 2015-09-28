@@ -42,7 +42,8 @@ public final class EbamPoller implements Poller {
   public void updateFiles() {
     LOGGER.debug("Polling {}", logger.name);
     try {
-      updateFile(DataFile.ERROR_LOG);
+//      updateFile(DataFile.ERROR_LOG);
+    updateFile(DataFile.DATA_LOG);
     } catch (PollerException e) {
       LOGGER.error("Unable to retrieve data from {}. ({})", logger.name, e);
     }
@@ -58,19 +59,30 @@ public final class EbamPoller implements Poller {
       Channel ch;
       try {
         ch = b.connect(logger.address, logger.port).sync().channel();
-//        ch.pipeline().addLast(new EbamHandler(logger, dataFile));
+        // ch.pipeline().addLast(new EbamHandler(logger, dataFile));
       } catch (InterruptedException e) {
         throw new PollerException(e);
       }
 
       LOGGER.debug("connected");
 
-      ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " -10\r\n");
-      while (!lastWriteFuture.isDone()) {
-        try {
-          lastWriteFuture.sync();
-        } catch (InterruptedException keepWaiting) {
+      try {
+        ch.writeAndFlush(ESC + "RF" + dataFile + " R\r\n");
+//        Thread.sleep(2000);
+//        ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " 31\r\n");
+//        Thread.sleep(4000);
+        ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " -12\r\n");
+//        Thread.sleep(20000);
+//        lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " 0\r\n");
+//        Thread.sleep(2000);
+        while (!lastWriteFuture.isDone()) {
+          try {
+            lastWriteFuture.sync();
+          } catch (InterruptedException keepWaiting) {
+          }
         }
+      } catch (Exception e) {
+        e.printStackTrace();
       }
       // If user typed the 'bye' command, wait until the server closes
       // the connection.
