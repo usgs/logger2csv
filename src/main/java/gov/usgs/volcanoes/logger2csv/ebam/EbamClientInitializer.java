@@ -9,7 +9,6 @@ import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.util.CharsetUtil;
 
 public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
@@ -28,9 +27,8 @@ public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
     ChannelPipeline pipeline = ch.pipeline();
 
     // Decoders
-    pipeline.addLast(new ChannelTrafficShapingHandler(4800, 4800, 100));
-    pipeline.addLast(new LineBasedFrameDecoder(8192));
-    pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+    pipeline.addLast(new LineBasedFrameDecoder(1024, true, true));
+    pipeline.addLast(new StringDecoder(CharsetUtil.US_ASCII));
     pipeline.addLast("readTimeoutHandler", new ReadTimeoutHandler(10));
     pipeline.addLast(new EbamHandler(logger, dataFile));
 

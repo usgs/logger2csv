@@ -1,19 +1,16 @@
 package gov.usgs.volcanoes.logger2csv.ebam;
 
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.PipedReader;
 import java.io.PipedWriter;
-import java.util.List;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.ReadTimeoutException;
 
 /**
  * Handles a client-side channel.
@@ -22,42 +19,51 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class EbamHandler extends SimpleChannelInboundHandler<String> {
   private static final Logger LOGGER = LoggerFactory.getLogger(EbamHandler.class);
 
-  private static final int HEADER_COUNT = 6;
+  private static final int HEADER_COUNT = 7;
   private EbamDataLogger logger;
   private DataFile dataFile;
-  private List<CSVRecord> records;
   private CSVParser parser;
   private PipedWriter writer;
   private int recordIndex = -1;
-private int headersFound = 0;
+  private int headersFound = 0;
+  StringBuffer records;
 
   public EbamHandler(EbamDataLogger logger, DataFile dataFile) throws IOException {
     this.logger = logger;
     this.dataFile = dataFile;
     writer = new PipedWriter();
-    parser = new CSVParser(new PipedReader(writer), CSVFormat.RFC4180);
+    records = new StringBuffer();
   }
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, String msg) throws IOException {
-    LOGGER.debug("Recieved record: {}", msg.replace((char)0x1b, '`'));
-    
-    
+    LOGGER.debug("Recieved record: {}", msg.replace((char) 0x1b, '`'));
+
+
     // Record index "RF3 R 32 L 32 X0750"
-    if (recordIndex == -1 && msg.matches("RF. R \\d+")) {
+    if (recordIndex == -1 && msg.matches(".*RF. R \\d+.*")) {
       recordIndex = Integer.parseInt(msg.split("\\s+")[2]);
       LOGGER.debug("Found record index {}", recordIndex);
-    } else if (headersFound < HEADER_COUNT){
+    }
+
+    if (headersFound < HEADER_COUNT) {
+      headersFound++;
+    } else if (headersFound == HEADER_COUNT) {
+      records.append(msg + ",Index\n");
       headersFound++;
     } else {
-      writer.write(msg + "," + recordIndex++);
+      records.append(msg + "," + recordIndex++ + "\n");
     }
-      
+
   }
 
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-    LOGGER.debug("That's everything I'm going to get from {}.", logger.name);
+    if (cause instanceof ReadTimeoutException) {
+      LOGGER.debug("That's everything I'm going to get from {}.", logger.name);
+      LOGGER.debug(records.toString());
+    } else {
+      LOGGER.error("Error polling E-BAM. ({})", cause.getLocalizedMessage());
+    }
   }
 }
-

@@ -42,8 +42,8 @@ public final class EbamPoller implements Poller {
   public void updateFiles() {
     LOGGER.debug("Polling {}", logger.name);
     try {
-//      updateFile(DataFile.ERROR_LOG);
-    updateFile(DataFile.DATA_LOG);
+      // updateFile(DataFile.ERROR_LOG);
+      updateFile(DataFile.DATA_LOG);
     } catch (PollerException e) {
       LOGGER.error("Unable to retrieve data from {}. ({})", logger.name, e);
     }
@@ -68,13 +68,13 @@ public final class EbamPoller implements Poller {
 
       try {
         ch.writeAndFlush(ESC + "RF" + dataFile + " R\r\n");
-//        Thread.sleep(2000);
-//        ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " 31\r\n");
-//        Thread.sleep(4000);
-        ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " -12\r\n");
-//        Thread.sleep(20000);
-//        lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " 0\r\n");
-//        Thread.sleep(2000);
+        // Thread.sleep(2000);
+        // ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " 31\r\n");
+        // Thread.sleep(4000);
+        ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " -15\r\n");
+        // Thread.sleep(20000);
+        // lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " 0\r\n");
+        // Thread.sleep(2000);
         while (!lastWriteFuture.isDone()) {
           try {
             lastWriteFuture.sync();
