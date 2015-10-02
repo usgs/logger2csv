@@ -1,11 +1,19 @@
 package gov.usgs.volcanoes.logger2csv.ebam;
 
+import gov.usgs.volcanoes.logger2csv.FileDataWriter;
+import gov.usgs.volcanoes.logger2csv.logger.LoggerRecord;
+
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PipedWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ListIterator;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -61,9 +69,29 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
     if (cause instanceof ReadTimeoutException) {
       LOGGER.debug("That's everything I'm going to get from {}.", logger.name);
-      LOGGER.debug(records.toString());
+      writeData();
     } else {
       LOGGER.error("Error polling E-BAM. ({})", cause.getLocalizedMessage());
+    }
+  }
+
+  private void writeData() {
+    FileDataWriter fileWriter =
+        new FileDataWriter(logger.csvFormat, logger.getFilePattern(dataFile));
+
+    try {
+      CSVParser parser = CSVParser.parse(records.toString(), CSVFormat.RFC4180);
+      ListIterator<CSVRecord> listIt = parser.getRecords().listIterator();
+      fileWriter.addHeader(listIt.next());
+
+      SimpleDateFormat dateFormat = new SimpleDateFormat(EbamDataLogger.DATE_FORMAT_STRING);
+      fileWriter.write(
+          LoggerRecord.fromCSVList(listIt, dateFormat, EbamDataLogger.DATE_COLUMN).listIterator());
+    } catch (ParseException e) {
+      LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
+    } catch (IOException e) {
+      LOGGER.error("Unable to write records for {}.{}. I'll try again next time. ({})", logger.name,
+          dataFile, e.getLocalizedMessage());
     }
   }
 }

@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -69,7 +69,7 @@ public final class CampbellPoller implements Poller {
     }
 
     List<CSVRecord> headers = extractHeaders(results);
-    
+
     if (!results.hasNext()) {
       LOGGER.debug("No new data in table {}.{}", logger.name, table);
       return;
@@ -88,7 +88,13 @@ public final class CampbellPoller implements Poller {
       return;
     }
 
-    List<LoggerRecord> records = extractRecords(results);
+    List<LoggerRecord> records;
+    SimpleDateFormat dateFormat = new SimpleDateFormat(CampbellDataLogger.DATE_FORMAT_STRING);
+    try {
+      records = LoggerRecord.fromCSVList(results, dateFormat, CampbellDataLogger.DATE_COLUMN);
+    } catch (ParseException e1) {
+      throw new PollerException("Cannot parse results. (" + e1.getLocalizedMessage() + ")");
+    }
 
     // write new data
     FileDataWriter fileWriter = new FileDataWriter(logger.csvFormat, logger.getFilePattern(table));
@@ -187,17 +193,17 @@ public final class CampbellPoller implements Poller {
     return headers;
   }
 
-  private List<LoggerRecord> extractRecords(Iterator<CSVRecord> iterator) {
-    List<LoggerRecord> records = new ArrayList<LoggerRecord>();
-    while (iterator.hasNext()) {
-      CSVRecord record = iterator.next();
-      try {
-        records.add(new LoggerRecord(logger.parseDate(record).getTime(), record));
-      } catch (ParseException e) {
-        LOGGER.info("Discarding unparsable record. ({})", record);
-      }
-    }
-    return records;
-
-  }
+//  private List<LoggerRecord> extractRecords(Iterator<CSVRecord> iterator) {
+//    List<LoggerRecord> records = new ArrayList<LoggerRecord>();
+//    while (iterator.hasNext()) {
+//      CSVRecord record = iterator.next();
+//      try {
+//        records.add(new LoggerRecord(logger.parseDate(record).getTime(), record));
+//      } catch (ParseException e) {
+//        LOGGER.info("Discarding unparsable record. ({})", record);
+//      }
+//    }
+//    return records;
+//
+//  }
 }

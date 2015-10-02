@@ -7,13 +7,13 @@ public enum DataFile {
   ERROR_LOG('3'), 
   DIAG_LOG('4');
 
-  private char value;
+  public final char value;
 
   DataFile(char value) {
     this.value = value;
   }
 
-  public String toString() {
-    return String.valueOf(value);
-  }
+//  public String toString() {
+//    return String.valueOf(value);
+//  }
 }

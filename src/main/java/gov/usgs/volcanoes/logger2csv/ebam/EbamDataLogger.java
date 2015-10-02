@@ -46,14 +46,16 @@ public final class EbamDataLogger extends DataLogger {
   /**
    * Return a filename pattern suitable for passing to SimpleDateFormat.
    * 
+   * @param dataFile
+   * 
    * @param table logger table
    * @return String suitable for SimpleDateFormat
    */
-  public String getFilePattern() {
+  public String getFilePattern(DataFile dataFile) {
     final StringBuilder sb = new StringBuilder();
     sb.append("'" + pathRoot + "/" + name + "/'");
     sb.append(filePathFormat.toPattern());
-    sb.append("'/" + name + "'");
+    sb.append("'/" + name + "-" + dataFile.toString() + "'");
     sb.append(fileSuffixFormat.toPattern());
 
     final String filename = sb.toString().replace('/', File.separatorChar);

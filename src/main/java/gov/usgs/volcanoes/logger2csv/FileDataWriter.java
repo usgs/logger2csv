@@ -98,7 +98,7 @@ public class FileDataWriter {
           throw e;
         }
       }
-
+LOGGER.debug("printing {}", record.record);
       printer.printRecord(record.record);
     }
 
