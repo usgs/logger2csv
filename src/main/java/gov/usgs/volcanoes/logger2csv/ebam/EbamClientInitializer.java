@@ -16,10 +16,12 @@ public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
 
   private final EbamDataLogger logger;
   private final DataFile dataFile;
+  private final int recordIndex;
 
-  public EbamClientInitializer(EbamDataLogger logger, DataFile dataFile) {
+  public EbamClientInitializer(EbamDataLogger logger, DataFile dataFile, int recordIndex) {
     this.logger = logger;
     this.dataFile = dataFile;
+    this.recordIndex = recordIndex;
   }
 
   @Override
@@ -30,7 +32,7 @@ public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
     pipeline.addLast(new LineBasedFrameDecoder(1024, true, true));
     pipeline.addLast(new StringDecoder(CharsetUtil.US_ASCII));
     pipeline.addLast("readTimeoutHandler", new ReadTimeoutHandler(10));
-    pipeline.addLast(new EbamHandler(logger, dataFile));
+    pipeline.addLast(new EbamHandler(logger, dataFile, recordIndex));
 
     // Encoders
     pipeline.addLast(new StringEncoder());

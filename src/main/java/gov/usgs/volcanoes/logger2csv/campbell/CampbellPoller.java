@@ -101,9 +101,9 @@ public final class CampbellPoller implements Poller {
     fileWriter.addHeaders(headers);
     try {
       fileWriter.write(records.iterator());
-    } catch (ParseException e) {
-      LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
-      return;
+//    } catch (ParseException e) {
+//      LOGGER.error("Cannot parse logger response. Skipping {}. ({})", logger.name, e);
+//      return;
     } catch (IOException e) {
       LOGGER.error("Cannot write to datafile for {}.{}.", logger.name, table);
       return;

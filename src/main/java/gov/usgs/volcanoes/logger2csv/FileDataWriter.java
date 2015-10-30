@@ -75,7 +75,7 @@ public class FileDataWriter {
    * @throws ParseException file pattern cannot be parsed
    * @throws IOException file cannot be accessed
    */
-  public final void write(Iterator<LoggerRecord> records) throws ParseException, IOException {
+  public final void write(Iterator<LoggerRecord> records) throws IOException {
     File workingFile = null;
     CSVPrinter printer = null;
 
@@ -98,8 +98,8 @@ public class FileDataWriter {
           throw e;
         }
       }
-LOGGER.debug("printing {}", record.record);
       printer.printRecord(record.record);
+      printer.flush();
     }
 
   }

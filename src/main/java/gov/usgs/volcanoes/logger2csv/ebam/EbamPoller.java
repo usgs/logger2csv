@@ -5,9 +5,11 @@
 
 package gov.usgs.volcanoes.logger2csv.ebam;
 
+import gov.usgs.volcanoes.logger2csv.FileDataReader;
 import gov.usgs.volcanoes.logger2csv.poller.Poller;
 import gov.usgs.volcanoes.logger2csv.poller.PollerException;
 
+import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +28,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  */
 public final class EbamPoller implements Poller {
   private static final Logger LOGGER = LoggerFactory.getLogger(EbamPoller.class);
-  private static final char ESC = 0x1b;
 
   private final EbamDataLogger logger;
 
@@ -42,10 +43,21 @@ public final class EbamPoller implements Poller {
   public void updateFiles() {
     LOGGER.debug("Polling {}", logger.name);
     try {
-//       updateFile(DataFile.ERROR_LOG);
       updateFile(DataFile.DATA_LOG);
     } catch (PollerException e) {
       LOGGER.error("Unable to retrieve data from {}. ({})", logger.name, e);
+    }
+  }
+
+  private int findLastRecordNum(DataFile dataFile) throws PollerException {
+    FileDataReader fileReader = new FileDataReader(logger);
+    CSVRecord lastRecord = fileReader.findLastRecord(logger.getFilePattern(dataFile));
+    if (lastRecord == null) {
+      LOGGER.debug("No recent data file was found.");
+      return -1;
+    } else {
+      LOGGER.debug("Most recent record num is {}", lastRecord.get(13));
+      return Integer.parseInt(lastRecord.get(13));
     }
   }
 
@@ -53,39 +65,18 @@ public final class EbamPoller implements Poller {
     EventLoopGroup group = new NioEventLoopGroup();
     try {
       Bootstrap b = new Bootstrap();
-      ChannelHandler handler = new EbamClientInitializer(logger, dataFile);
+      int recordIndex = findLastRecordNum(dataFile);
+      ChannelHandler handler = new EbamClientInitializer(logger, dataFile, recordIndex);
       b.group(group).channel(NioSocketChannel.class).handler(handler);
 
       Channel ch;
       try {
         ch = b.connect(logger.address, logger.port).sync().channel();
-        // ch.pipeline().addLast(new EbamHandler(logger, dataFile));
       } catch (InterruptedException e) {
         throw new PollerException(e);
       }
 
       LOGGER.debug("connected");
-
-      try {
-        ch.writeAndFlush(ESC + "RF" + dataFile.value + " R\r\n");
-        // Thread.sleep(2000);
-        // ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " 31\r\n");
-        // Thread.sleep(4000);
-        ChannelFuture lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile.value + " -15\r\n");
-        // Thread.sleep(20000);
-        // lastWriteFuture = ch.writeAndFlush(ESC + "PF" + dataFile + " 0\r\n");
-        // Thread.sleep(2000);
-        while (!lastWriteFuture.isDone()) {
-          try {
-            lastWriteFuture.sync();
-          } catch (InterruptedException keepWaiting) {
-          }
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      // If user typed the 'bye' command, wait until the server closes
-      // the connection.
       try {
         ch.closeFuture().sync();
       } catch (InterruptedException e) {
