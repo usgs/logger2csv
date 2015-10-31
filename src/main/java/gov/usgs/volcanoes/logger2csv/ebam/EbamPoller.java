@@ -15,14 +15,13 @@ import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 /**
- * A class to poll a single data logger.
+ * A class to poll a single eBAM data logger over the network.
  * 
  * @author Tom Parker
  */
@@ -40,6 +39,9 @@ public final class EbamPoller implements Poller {
     this.logger = logger;
   }
 
+  /**
+   * Update all files
+   */
   public void updateFiles() {
     LOGGER.debug("Polling {}", logger.name);
     try {
@@ -78,11 +80,10 @@ public final class EbamPoller implements Poller {
         throw new PollerException(e);
       }
 
-      LOGGER.debug("connected");
+      LOGGER.debug("connected to {}.", logger.name);
       try {
         ch.closeFuture().sync();
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
 

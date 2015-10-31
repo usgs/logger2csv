@@ -17,7 +17,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,6 +41,7 @@ public class FileDataWriter {
    * Constructor.
    * 
    * @param csvFormat CSVFormat of file on disk
+   * @param fileNamePattern Pattern parsed by SimpleDateFormat to create filenames
    *
    */
   public FileDataWriter(CSVFormat csvFormat, String fileNamePattern) {
@@ -50,6 +50,9 @@ public class FileDataWriter {
     this.fileNamePattern = new SimpleDateFormat(fileNamePattern);
   }
 
+  /**
+   * @param earliestTime Data before this time will not be written.
+   */
   public final void setEarliestTime(long earliestTime) {
     this.earliestTime = earliestTime;
   }
@@ -77,7 +80,6 @@ public class FileDataWriter {
    * Write records to daily CSV files
    *
    * @param records records to write
-   * @throws ParseException file pattern cannot be parsed
    * @throws IOException file cannot be accessed
    */
   public final void write(Iterator<LoggerRecord> records) throws IOException {
@@ -86,10 +88,10 @@ public class FileDataWriter {
 
     while (records.hasNext()) {
       final LoggerRecord record = records.next();
-      
+
       if (record.date < earliestTime)
         continue;
-      
+
       File thisFile = null;
       thisFile = new File(fileNamePattern.format(new Date(record.date)));
       LOGGER.debug("working file: {}", thisFile);
