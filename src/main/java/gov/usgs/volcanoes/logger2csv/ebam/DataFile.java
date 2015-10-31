@@ -1,19 +1,17 @@
 package gov.usgs.volcanoes.logger2csv.ebam;
 
 public enum DataFile {
-  EEPROM('E'), 
-  CHANNEL_DESCRIPTOR('1'), 
-  DATA_LOG('2'), 
-  ERROR_LOG('3'), 
-  DIAG_LOG('4');
+  EEPROM('E', false), 
+  CHANNEL_DESCRIPTOR('1', false), 
+  DATA_LOG('2', true), 
+  ERROR_LOG('3', false), 
+  DIAG_LOG('4', false);
 
   public final char value;
+  public final boolean hasHeader;
 
-  DataFile(char value) {
+  DataFile(char value, boolean hasHeader) {
     this.value = value;
+    this.hasHeader = hasHeader;
   }
-
-//  public String toString() {
-//    return String.valueOf(value);
-//  }
 }

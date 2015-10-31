@@ -36,6 +36,7 @@ public class FileDataWriter {
   private final CSVFormat csvFormat;
   private final SimpleDateFormat fileNamePattern;
   private final List<CSVRecord> headers;
+  private long earliestTime = Long.MIN_VALUE;
 
   /**
    * Constructor.
@@ -47,6 +48,10 @@ public class FileDataWriter {
     headers = new ArrayList<CSVRecord>();
     this.csvFormat = csvFormat;
     this.fileNamePattern = new SimpleDateFormat(fileNamePattern);
+  }
+
+  public final void setEarliestTime(long earliestTime) {
+    this.earliestTime = earliestTime;
   }
 
 
@@ -81,6 +86,10 @@ public class FileDataWriter {
 
     while (records.hasNext()) {
       final LoggerRecord record = records.next();
+      
+      if (record.date < earliestTime)
+        continue;
+      
       File thisFile = null;
       thisFile = new File(fileNamePattern.format(new Date(record.date)));
       LOGGER.debug("working file: {}", thisFile);

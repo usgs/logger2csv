@@ -44,6 +44,7 @@ public final class EbamPoller implements Poller {
     LOGGER.debug("Polling {}", logger.name);
     try {
       updateFile(DataFile.DATA_LOG);
+      updateFile(DataFile.ERROR_LOG);
     } catch (PollerException e) {
       LOGGER.error("Unable to retrieve data from {}. ({})", logger.name, e);
     }
@@ -56,8 +57,9 @@ public final class EbamPoller implements Poller {
       LOGGER.debug("No recent data file was found.");
       return -1;
     } else {
-      LOGGER.debug("Most recent record num is {}", lastRecord.get(13));
-      return Integer.parseInt(lastRecord.get(13));
+      int recordNumIdx = lastRecord.size() - 1;
+      LOGGER.debug("Most recent record num is {}", lastRecord.get(recordNumIdx));
+      return Integer.parseInt(lastRecord.get(recordNumIdx));
     }
   }
 

@@ -30,8 +30,9 @@ import io.netty.util.CharsetUtil;
 public class EbamHandler extends SimpleChannelInboundHandler<String> {
   private static final Logger LOGGER = LoggerFactory.getLogger(EbamHandler.class);
   private static final char ESC = 0x1b;
+  private static final long DAY_TO_MS = 24 * 60 * 60 * 1000;
+  private static final int PREAMBLE_LENGTH = 6;
 
-  private static final int HEADER_COUNT = 7;
   private EbamDataLogger logger;
   private DataFile dataFile;
   private CSVParser parser;
@@ -75,9 +76,9 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
       System.out.println("sending " + msg);
       ctx.writeAndFlush(Unpooled.copiedBuffer(ESC + msg + "\r\n", CharsetUtil.UTF_8));
     } else {
-      if (headersFound < HEADER_COUNT) {
+      if (headersFound < PREAMBLE_LENGTH) {
         headersFound++;
-      } else if (headersFound == HEADER_COUNT) {
+      } else if (dataFile.hasHeader && headersFound == PREAMBLE_LENGTH + 1) {
         records.append(msg + ",Index\n");
         headersFound++;
       } else {
@@ -99,13 +100,22 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
   private void writeData() {
     FileDataWriter fileWriter =
         new FileDataWriter(logger.csvFormat, logger.getFilePattern(dataFile));
+    
+    long ancientMs = System.currentTimeMillis() - logger.backfill * DAY_TO_MS;
+    fileWriter.setEarliestTime(ancientMs);
 
     try {
-      CSVParser parser = CSVParser.parse(records.toString(), CSVFormat.RFC4180);
+      String recordsString = records.toString();
+      recordsString = recordsString.replaceAll(",\\s+", ",");
+      
+      CSVParser parser = CSVParser.parse(recordsString, CSVFormat.RFC4180);
       ListIterator<CSVRecord> listIt = parser.getRecords().listIterator();
-      fileWriter.addHeader(listIt.next());
+      if (dataFile.hasHeader)
+        fileWriter.addHeader(listIt.next());
 
+      // first line always repeated. Skit it.
       listIt.next();
+      
       SimpleDateFormat dateFormat = new SimpleDateFormat(EbamDataLogger.DATE_FORMAT_STRING);
       fileWriter.write(
           LoggerRecord.fromCSVList(listIt, dateFormat, EbamDataLogger.DATE_COLUMN).listIterator());
