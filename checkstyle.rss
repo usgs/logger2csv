@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2015</copyright>
     <item>
-      <title>File: 15,
-             Errors: 275,
+      <title>File: 26,
+             Errors: 426,
              Warnings: 0,
              Infos: 0
       </title>
@@ -46,7 +46,7 @@ under the License.
           <tbody>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.DataLogger.java">gov/usgs/volcanoes/logger2csv/DataLogger.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.logger.LoggerException.java">gov/usgs/volcanoes/logger2csv/logger/LoggerException.java</a>
                 </td>
                 <td>
                   0
@@ -55,12 +55,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  46
+                  8
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.FileDataReader.java">gov/usgs/volcanoes/logger2csv/FileDataReader.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.logger.LoggerRecord.java">gov/usgs/volcanoes/logger2csv/logger/LoggerRecord.java</a>
                 </td>
                 <td>
                   0
@@ -69,12 +69,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  16
+                  24
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.package-info.java">gov/usgs/volcanoes/logger2csv/package-info.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.poller.Poller.java">gov/usgs/volcanoes/logger2csv/poller/Poller.java</a>
                 </td>
                 <td>
                   0
@@ -83,7 +83,49 @@ under the License.
                   0
                 </td>
                 <td>
-                  5
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.ebam.DataFile.java">gov/usgs/volcanoes/logger2csv/ebam/DataFile.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.ebam.EbamClient.java">gov/usgs/volcanoes/logger2csv/ebam/EbamClient.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.logger.DataLogger.java">gov/usgs/volcanoes/logger2csv/logger/DataLogger.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  38
                 </td>
               </tr>
                           <tr>
@@ -97,21 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.campbell.CampbellPoller.java">gov/usgs/volcanoes/logger2csv/campbell/CampbellPoller.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  46
+                  15
                 </td>
               </tr>
                           <tr>
@@ -125,7 +153,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  31
+                  26
                 </td>
               </tr>
                           <tr>
@@ -144,6 +172,118 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#log4j.properties">log4j.properties</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.poller.PollerException.java">gov/usgs/volcanoes/logger2csv/poller/PollerException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.ebam.EbamDataLogger.java">gov/usgs/volcanoes/logger2csv/ebam/EbamDataLogger.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.ebam.EbamClientInitializer.java">gov/usgs/volcanoes/logger2csv/ebam/EbamClientInitializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  18
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.poller.PollerFactory.java">gov/usgs/volcanoes/logger2csv/poller/PollerFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  11
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.FileDataReader.java">gov/usgs/volcanoes/logger2csv/FileDataReader.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.package-info.java">gov/usgs/volcanoes/logger2csv/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  5
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.campbell.CampbellPoller.java">gov/usgs/volcanoes/logger2csv/campbell/CampbellPoller.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  51
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.Logger2csv.java">gov/usgs/volcanoes/logger2csv/Logger2csv.java</a>
                 </td>
                 <td>
@@ -153,21 +293,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  22
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.Poller.java">gov/usgs/volcanoes/logger2csv/Poller.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  10
+                  24
                 </td>
               </tr>
                           <tr>
@@ -181,7 +307,35 @@ under the License.
                   0
                 </td>
                 <td>
-                  12
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.ebam.package-info.java">gov/usgs/volcanoes/logger2csv/ebam/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.ebam.EbamHandler.java">gov/usgs/volcanoes/logger2csv/ebam/EbamHandler.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  47
                 </td>
               </tr>
                           <tr>
@@ -195,21 +349,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  25
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.PollerFactory.java">gov/usgs/volcanoes/logger2csv/PollerFactory.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  19
+                  26
                 </td>
               </tr>
                           <tr>
@@ -228,7 +368,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.campbell.CampbellWriter.java">gov/usgs/volcanoes/logger2csv/campbell/CampbellWriter.java</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.poller.package-info.java">gov/usgs/volcanoes/logger2csv/poller/package-info.java</a>
                 </td>
                 <td>
                   0
@@ -237,12 +377,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  14
+                  4
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#log4j.properties">log4j.properties</a>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.ebam.EbamPoller.java">gov/usgs/volcanoes/logger2csv/ebam/EbamPoller.java</a>
                 </td>
                 <td>
                   0
@@ -251,7 +391,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  1
+                  17
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://volcanoes.usgs.gov/software/checkstyle.html#gov.usgs.volcanoes.logger2csv.logger.package-info.java">gov/usgs/volcanoes/logger2csv/logger/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
                 </td>
               </tr>
                       </tbody>
