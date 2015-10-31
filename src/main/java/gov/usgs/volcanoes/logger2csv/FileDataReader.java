@@ -5,7 +5,7 @@
 
 package gov.usgs.volcanoes.logger2csv;
 
-import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
+import gov.usgs.volcanoes.logger2csv.logger.AbstractDataLogger;
 import gov.usgs.volcanoes.logger2csv.poller.PollerException;
 
 import org.apache.commons.csv.CSVParser;
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * A class to read CSV data from a file.
@@ -29,14 +30,14 @@ public class FileDataReader {
 
   private static final long DAY_TO_MS = 24 * 60 * 60 * 1000;
 
-  private final DataLogger logger;
+  private final AbstractDataLogger logger;
 
   /**
    * Constructor.
    * 
    * @param logger my data logger
    */
-  public FileDataReader(DataLogger logger) {
+  public FileDataReader(final AbstractDataLogger logger) {
     this.logger = logger;
   }
 
@@ -47,10 +48,10 @@ public class FileDataReader {
    * @return the most recent record
    * @throws PollerException when things go wrong
    */
-  public CSVRecord findLastRecord(String fileNamePattern) throws PollerException {
+  public CSVRecord findLastRecord(final String fileNamePattern) throws PollerException {
     LOGGER.debug("Finding last record for {}", logger.name);
 
-    File recentFile = findRecentFile(fileNamePattern);
+    final File recentFile = findRecentFile(fileNamePattern);
     if (recentFile == null || !recentFile.exists())
       return null;
 
@@ -60,11 +61,11 @@ public class FileDataReader {
     } catch (IOException e) {
       throw new PollerException(e);
     }
-    Iterator<CSVRecord> iterator = parser.iterator();
+    final Iterator<CSVRecord> iterator = parser.iterator();
 
     // demand files have at least one record if they exist.
     if (!iterator.hasNext()) {
-      String message = String.format(
+      final String message = String.format(
           "The most recent data file has no records, remove it before proceeding. (%s)",
           recentFile);
       throw new PollerException(message);
@@ -78,15 +79,15 @@ public class FileDataReader {
     return record;
   }
 
-  private File findRecentFile(String fileNamePattern) {
-    SimpleDateFormat dateFormat = new SimpleDateFormat(fileNamePattern);
+  private File findRecentFile(final String fileNamePattern) {
+    final SimpleDateFormat dateFormat = new SimpleDateFormat(fileNamePattern, Locale.ENGLISH);
 
     long timeMs = System.currentTimeMillis();
-    long ancientMs = timeMs - logger.backfill * DAY_TO_MS;
+    final long ancientMs = timeMs - logger.backfill * DAY_TO_MS;
 
     while (timeMs > ancientMs) {
-      String fileName = dateFormat.format(timeMs);
-      File file = new File(fileName);
+      final String fileName = dateFormat.format(timeMs);
+      final File file = new File(fileName);
       if (file.exists()) {
         return file;
       } else {

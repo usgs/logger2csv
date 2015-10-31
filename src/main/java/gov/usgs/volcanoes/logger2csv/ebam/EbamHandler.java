@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ListIterator;
+import java.util.Locale;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -36,11 +37,12 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
   private static final long DAY_TO_MS = 24 * 60 * 60 * 1000;
   private static final int PREAMBLE_LENGTH = 6;
 
-  private EbamDataLogger logger;
-  private DataFile dataFile;
-  private int recordIndex = -1;
+  private final EbamDataLogger logger;
+  private final DataFile dataFile;
+  private final StringBuffer records;
+
+  private int recordIndex;
   private int headersFound = 0;
-  private StringBuffer records;
 
   /**
    * Constructor.
@@ -50,7 +52,8 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
    * @param recordIndex The most recent record index already retrieved
    * @throws IOException then communication fails.
    */
-  public EbamHandler(EbamDataLogger logger, DataFile dataFile, int recordIndex) throws IOException {
+  public EbamHandler(final EbamDataLogger logger, final DataFile dataFile, final int recordIndex) throws IOException {
+    super();
     this.logger = logger;
     this.dataFile = dataFile;
     this.recordIndex = recordIndex;
@@ -58,45 +61,43 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
   }
 
   @Override
-  public void channelActive(ChannelHandlerContext ctx) {
+  public void channelActive(final ChannelHandlerContext ctx) {
     if (recordIndex == -1) {
-      String msg = ESC + "RF" + dataFile.value + " R\r\n";
+      final String msg = ESC + "RF" + dataFile.value + " R\r\n";
       ctx.writeAndFlush(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
     } else {
-      String msg = String.format("PF%s %d", dataFile.value, recordIndex + 1);
-      System.out.println("sending " + msg);
+      final String msg = String.format("PF%s %d", dataFile.value, recordIndex + 1);
       ctx.writeAndFlush(Unpooled.copiedBuffer(ESC + msg + "\r\n", CharsetUtil.UTF_8));
     }
   }
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, String msg) throws IOException {
-    LOGGER.debug("Recieved record: {}", msg.replace((char) 0x1b, '`'));
+  protected void channelRead0(final ChannelHandlerContext ctx, final String msgIn) throws IOException {
+    LOGGER.debug("Recieved record: {}", msgIn.replace((char) 0x1b, '`'));
 
 
     // Record index "RF3 R 32 L 32 X0750"
-    if (recordIndex == -1 && msg.matches(".*RF. R \\d+.*")) {
-      recordIndex = Integer.parseInt(msg.split("\\s+")[2]);
+    if (recordIndex == -1 && msgIn.matches(".*RF. R \\d+.*")) {
+      recordIndex = Integer.parseInt(msgIn.split("\\s+")[2]);
       recordIndex -= 15;
       LOGGER.debug("Found record index {}", recordIndex);
 
-      msg = String.format("PF%s -15", dataFile.value);
-      System.out.println("sending " + msg);
-      ctx.writeAndFlush(Unpooled.copiedBuffer(ESC + msg + "\r\n", CharsetUtil.UTF_8));
+      final String msgOut = String.format("PF%s -15", dataFile.value);
+      ctx.writeAndFlush(Unpooled.copiedBuffer(ESC + msgOut + "\r\n", CharsetUtil.UTF_8));
     } else {
       if (headersFound < PREAMBLE_LENGTH) {
         headersFound++;
       } else if (dataFile.hasHeader && headersFound == PREAMBLE_LENGTH + 1) {
-        records.append(msg + ",Index\n");
+        records.append(msgIn).append(",Index\n");
         headersFound++;
       } else {
-        records.append(msg + "," + recordIndex++ + "\n");
+        records.append(msgIn + "," + recordIndex++ + "\n");
       }
     }
   }
 
   @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+  public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
     if (cause instanceof ReadTimeoutException) {
       LOGGER.debug("That's everything I'm going to get from {}.", logger.name);
       writeData();
@@ -106,25 +107,25 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
   }
 
   private void writeData() {
-    FileDataWriter fileWriter =
+    final FileDataWriter fileWriter =
         new FileDataWriter(logger.csvFormat, logger.getFilePattern(dataFile));
     
-    long ancientMs = System.currentTimeMillis() - logger.backfill * DAY_TO_MS;
+    final long ancientMs = System.currentTimeMillis() - logger.backfill * DAY_TO_MS;
     fileWriter.setEarliestTime(ancientMs);
 
     try {
       String recordsString = records.toString();
       recordsString = recordsString.replaceAll(",\\s+", ",");
       
-      CSVParser parser = CSVParser.parse(recordsString, CSVFormat.RFC4180);
-      ListIterator<CSVRecord> listIt = parser.getRecords().listIterator();
+      final CSVParser parser = CSVParser.parse(recordsString, CSVFormat.RFC4180);
+      final ListIterator<CSVRecord> listIt = parser.getRecords().listIterator();
       if (dataFile.hasHeader)
         fileWriter.addHeader(listIt.next());
 
       // first line always repeated. Skit it.
       listIt.next();
       
-      SimpleDateFormat dateFormat = new SimpleDateFormat(EbamDataLogger.DATE_FORMAT_STRING);
+      final SimpleDateFormat dateFormat = new SimpleDateFormat(EbamDataLogger.DATE_FORMAT, Locale.ENGLISH);
       fileWriter.write(
           LoggerRecord.fromCSVList(listIt, dateFormat, EbamDataLogger.DATE_COLUMN).listIterator());
     } catch (ParseException e) {

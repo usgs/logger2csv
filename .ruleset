@@ -15,7 +15,6 @@
    <rule ref="rulesets/java/strings.xml/UnnecessaryCaseChange"/>
    <rule ref="rulesets/java/strings.xml/UseStringBufferLength"/>
    <rule ref="rulesets/java/strings.xml/AppendCharacterWithChar"/>
-   <rule ref="rulesets/java/strings.xml/ConsecutiveAppendsShouldReuse"/>
    <rule ref="rulesets/java/strings.xml/ConsecutiveLiteralAppends"/>
    <rule ref="rulesets/java/strings.xml/UseIndexOfChar"/>
    <rule ref="rulesets/java/strings.xml/InefficientEmptyStringCheck"/>
@@ -28,11 +27,9 @@
    <rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable"/>
    <rule ref="rulesets/java/unusedcode.xml/UnusedPrivateMethod"/>
    <rule ref="rulesets/java/unusedcode.xml/UnusedFormalParameter"/>
-   <rule ref="rulesets/java/unusedcode.xml/UnusedModifier"/>
    <rule ref="rulesets/java/logging-java.xml/MoreThanOneLogger"/>
    <rule ref="rulesets/java/logging-java.xml/LoggerIsNotStaticFinal"/>
    <rule ref="rulesets/java/logging-java.xml/SystemPrintln"/>
-   <rule ref="rulesets/java/logging-java.xml/AvoidPrintStackTrace"/>
    <rule ref="rulesets/java/logging-java.xml/GuardLogStatementJavaUtil"/>
    <rule ref="rulesets/java/finalizers.xml/EmptyFinalizer"/>
    <rule ref="rulesets/java/finalizers.xml/FinalizeOnlyCallsSuperFinalize"/>
@@ -114,9 +111,6 @@
    <rule ref="rulesets/java/imports.xml/ImportFromSamePackage"/>
    <rule ref="rulesets/java/imports.xml/TooManyStaticImports"/>
    <rule ref="rulesets/java/imports.xml/UnnecessaryFullyQualifiedName"/>
-   <rule ref="rulesets/java/comments.xml/CommentRequired"/>
-   <rule ref="rulesets/java/comments.xml/CommentContent"/>
-   <rule ref="rulesets/java/empty.xml/EmptyCatchBlock"/>
    <rule ref="rulesets/java/empty.xml/EmptyIfStmt"/>
    <rule ref="rulesets/java/empty.xml/EmptyWhileStmt"/>
    <rule ref="rulesets/java/empty.xml/EmptyTryBlock"/>
@@ -135,7 +129,6 @@
    <rule ref="rulesets/java/unnecessary.xml/UnusedNullCheckInEquals"/>
    <rule ref="rulesets/java/unnecessary.xml/UselessParentheses"/>
    <rule ref="rulesets/java/naming.xml/ShortVariable"/>
-   <rule ref="rulesets/java/naming.xml/LongVariable"/>
    <rule ref="rulesets/java/naming.xml/ShortMethodName"/>
    <rule ref="rulesets/java/naming.xml/VariableNamingConventions"/>
    <rule ref="rulesets/java/naming.xml/MethodNamingConventions"/>
@@ -180,16 +173,12 @@
    <rule ref="rulesets/java/junit.xml/UseAssertTrueInsteadOfAssertEquals"/>
    <rule ref="rulesets/java/controversial.xml/UnnecessaryConstructor"/>
    <rule ref="rulesets/java/controversial.xml/NullAssignment"/>
-   <rule ref="rulesets/java/controversial.xml/OnlyOneReturn"/>
    <rule ref="rulesets/java/controversial.xml/AssignmentInOperand"/>
-   <rule ref="rulesets/java/controversial.xml/AtLeastOneConstructor"/>
    <rule ref="rulesets/java/controversial.xml/DontImportSun"/>
    <rule ref="rulesets/java/controversial.xml/SuspiciousOctalEscape"/>
    <rule ref="rulesets/java/controversial.xml/CallSuperInConstructor"/>
    <rule ref="rulesets/java/controversial.xml/UnnecessaryParentheses"/>
    <rule ref="rulesets/java/controversial.xml/DefaultPackage"/>
-   <rule ref="rulesets/java/controversial.xml/BooleanInversion"/>
-   <rule ref="rulesets/java/controversial.xml/DataflowAnomalyAnalysis"/>
    <rule ref="rulesets/java/controversial.xml/AvoidFinalLocalVariable"/>
    <rule ref="rulesets/java/controversial.xml/AvoidUsingShortType"/>
    <rule ref="rulesets/java/controversial.xml/AvoidUsingVolatile"/>
@@ -242,7 +231,6 @@
    <rule ref="rulesets/java/basic.xml/UselessOperationOnImmutable"/>
    <rule ref="rulesets/java/basic.xml/UnusedNullCheckInEquals"/>
    <rule ref="rulesets/java/basic.xml/UselessParentheses"/>
-   <rule ref="rulesets/java/strictexception.xml/AvoidCatchingThrowable"/>
    <rule ref="rulesets/java/strictexception.xml/SignatureDeclareThrowsException"/>
    <rule ref="rulesets/java/strictexception.xml/ExceptionAsFlowControl"/>
    <rule ref="rulesets/java/strictexception.xml/AvoidCatchingNPE"/>
@@ -252,7 +240,6 @@
    <rule ref="rulesets/java/strictexception.xml/DoNotExtendJavaLangError"/>
    <rule ref="rulesets/java/strictexception.xml/DoNotThrowExceptionInFinally"/>
    <rule ref="rulesets/java/strictexception.xml/AvoidThrowingNewInstanceOfSameException"/>
-   <rule ref="rulesets/java/strictexception.xml/AvoidCatchingGenericException"/>
    <rule ref="rulesets/java/strictexception.xml/AvoidLosingExceptionInformation"/>
    <rule ref="rulesets/java/clone.xml/ProperCloneImplementation"/>
    <rule ref="rulesets/java/clone.xml/CloneThrowsCloneNotSupportedException"/>

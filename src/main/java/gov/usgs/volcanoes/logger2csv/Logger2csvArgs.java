@@ -57,13 +57,13 @@ public class Logger2csvArgs {
    * @param commandLineArgs the arg array passed to main()
    * @throws ArgumentException if something goes wrong
    */
-  public Logger2csvArgs(String[] commandLineArgs) throws ArgumentException {
+  public Logger2csvArgs(final String[] commandLineArgs) throws ArgumentException {
     Arguments args = new Args(PROGRAM_NAME, EXPLANATION, PARAMETERS);
     args = new ConfigFileArg(DEFAULT_CONFIG_FILENAME, args);
     args = new CreateConfigArg(EXAMPLE_CONFIG_FILENAME, args);
     args = new VerboseArg(args);
 
-    JSAPResult jsapResult = args.parse(commandLineArgs);
+    final JSAPResult jsapResult = args.parse(commandLineArgs);
 
     persistent = jsapResult.getBoolean("persistent");
     LOGGER.debug("Setting: persistent={}", persistent);

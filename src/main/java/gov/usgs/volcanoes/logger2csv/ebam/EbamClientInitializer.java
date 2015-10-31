@@ -36,15 +36,16 @@ public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
    * @param dataFile The data file to poll
    * @param recordIndex The most recent record on disk, or -1 if none are found.
    */
-  public EbamClientInitializer(EbamDataLogger logger, DataFile dataFile, int recordIndex) {
+  public EbamClientInitializer(final EbamDataLogger logger, final DataFile dataFile, final int recordIndex) {
+    super();
     this.logger = logger;
     this.dataFile = dataFile;
     this.recordIndex = recordIndex;
   }
 
   @Override
-  public void initChannel(SocketChannel ch) throws IOException {
-    ChannelPipeline pipeline = ch.pipeline();
+  public void initChannel(final SocketChannel chan) throws IOException {
+    final ChannelPipeline pipeline = chan.pipeline();
 
     // Decoders
     pipeline.addLast(new LineBasedFrameDecoder(1024, true, true));

@@ -21,16 +21,16 @@ public class PollerException extends Exception {
    * 
    * @param message Helpful information on cause of trouble
    */
-  public PollerException(String message) {
+  public PollerException(final String message) {
     super(message);
   }
 
   /**
    * Exception-wrapping constructor.
    * 
-   * @param e exception to wrap
+   * @param exception exception to wrap
    */
-  public PollerException(Exception e) {
-    super(e);
+  public PollerException(final Exception exception) {
+    super(exception);
   }
 }

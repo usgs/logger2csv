@@ -6,7 +6,7 @@
 package gov.usgs.volcanoes.logger2csv.campbell;
 
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
-import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
+import gov.usgs.volcanoes.logger2csv.logger.AbstractDataLogger;
 import gov.usgs.volcanoes.logger2csv.logger.LoggerException;
 
 import org.apache.commons.csv.CSVRecord;
@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Tom Parker
  */
-public final class CampbellDataLogger extends DataLogger {
+public final class CampbellDataLogger extends AbstractDataLogger {
 
   /** column index of date field */
   public static final int DATE_COLUMN = 0;
@@ -31,7 +31,7 @@ public final class CampbellDataLogger extends DataLogger {
   public static final int RECORD_NUM_COLUMN = 1;
 
   /** format of date field */
-  public static final String DATE_FORMAT_STRING = "yyyy-MM-dd hh:mm:ss";
+  public static final String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
 
   /** number of header lines */
   public static final int HEADER_COUNT = 4;
@@ -44,7 +44,7 @@ public final class CampbellDataLogger extends DataLogger {
    * @param config logger configuration
    * @throws LoggerException when there are no tables configured
    */
-  public CampbellDataLogger(ConfigFile config) throws LoggerException {
+  public CampbellDataLogger(final ConfigFile config) throws LoggerException {
     super(config, HEADER_COUNT);
 
     tables = config.getList("table");
@@ -59,15 +59,12 @@ public final class CampbellDataLogger extends DataLogger {
    * @param table logger table
    * @return String suitable for SimpleDateFormat
    */
-  public String getFilePattern(String table) {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("'" + pathRoot + "/" + name + "/'");
-    sb.append(filePathFormat.toPattern());
-    sb.append("'/" + name + "-" + table + "'");
-    sb.append(fileSuffixFormat.toPattern());
+  public String getFilePattern(final String table) {
+    final StringBuilder filePattern = new StringBuilder();
+    filePattern.append("'" + pathRoot + "/" + name + "/'").append(filePathFormat.toPattern())
+        .append("'/" + name + "-" + table + "'").append(fileSuffixFormat.toPattern());
 
-    final String filename = sb.toString().replace('/', File.separatorChar);
-    return filename;
+    return filePattern.toString().replace('/', File.separatorChar);
   }
 
 
@@ -87,8 +84,8 @@ public final class CampbellDataLogger extends DataLogger {
    * @return the Date found
    * @throws ParseException when format cannot be parsed
    */
-  protected Date parseDate(CSVRecord record) throws ParseException {
-    String dateString = record.get(DATE_COLUMN);
+  protected Date parseDate(final CSVRecord record) throws ParseException {
+    final String dateString = record.get(DATE_COLUMN);
 
     return dateFormat.parse(dateString);
   }
@@ -99,7 +96,7 @@ public final class CampbellDataLogger extends DataLogger {
    * @param record to search
    * @return int record number
    */
-  public int parseRecordNum(CSVRecord record) {
+  public int parseRecordNum(final CSVRecord record) {
     return Integer.parseInt(record.get(RECORD_NUM_COLUMN));
   }
 }

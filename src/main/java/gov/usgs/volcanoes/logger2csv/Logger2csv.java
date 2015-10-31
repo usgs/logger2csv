@@ -44,7 +44,7 @@ public class Logger2csv {
    *
    * @param configFile app configuration
    */
-  public Logger2csv(ConfigFile configFile) {
+  public Logger2csv(final ConfigFile configFile) {
     LOGGER.info("Launching Logger2csv ({})", Version.VERSION_STRING);
 
     this.configFile = configFile;
@@ -92,7 +92,7 @@ public class Logger2csv {
     }
   }
 
-  private static Logger2csvArgs getArgs(String[] argsArray) {
+  private static Logger2csvArgs getArgs(final String[] argsArray) {
     Logger2csvArgs args = null;
     // Parse the command line
     try {
@@ -104,15 +104,15 @@ public class Logger2csv {
     return args;
   }
 
-  private static ConfigFile getConfigFile(String configFileName) {
-    ConfigFile cf = null;
+  private static ConfigFile getConfigFile(final String configFileName) {
+    ConfigFile conf = null;
     try {
-      cf = new ConfigFile(configFileName);
+      conf = new ConfigFile(configFileName);
     } catch (final FileNotFoundException e) {
       LOGGER.error("Can't parse config file " + configFileName + ". Try using the --help flag.");
     }
 
-    return cf;
+    return conf;
   }
 
   /**
@@ -120,21 +120,21 @@ public class Logger2csv {
    *
    * @param args Command line arguments
    */
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     // Parse command line
-    Logger2csvArgs cmdLineArgs = getArgs(args);
+    final Logger2csvArgs cmdLineArgs = getArgs(args);
     if (cmdLineArgs == null || !cmdLineArgs.runnable) {
       System.exit(1);
     }
 
     // Parse config file
-    ConfigFile cf = getConfigFile(cmdLineArgs.configFileName);
-    if (cf == null) {
+    final ConfigFile conf = getConfigFile(cmdLineArgs.configFileName);
+    if (conf == null) {
       System.exit(1);
     }
 
     // Get data
-    final Logger2csv logger2csv = new Logger2csv(cf);
+    final Logger2csv logger2csv = new Logger2csv(conf);
     if (cmdLineArgs.persistent) {
       logger2csv.pollAllCountinous();
     } else {

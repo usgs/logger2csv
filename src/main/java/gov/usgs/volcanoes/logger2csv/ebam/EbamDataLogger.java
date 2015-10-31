@@ -6,7 +6,7 @@
 package gov.usgs.volcanoes.logger2csv.ebam;
 
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
-import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
+import gov.usgs.volcanoes.logger2csv.logger.AbstractDataLogger;
 import gov.usgs.volcanoes.logger2csv.logger.LoggerException;
 
 import org.apache.commons.csv.CSVRecord;
@@ -20,13 +20,13 @@ import java.util.Date;
  *
  * @author Tom Parker
  */
-public final class EbamDataLogger extends DataLogger {
+public final class EbamDataLogger extends AbstractDataLogger {
 
   /** column index of date field */
   public static final int DATE_COLUMN = 0;
 
   /** format of date field */
-  public static final String DATE_FORMAT_STRING = "dd-MMM-yyyy hh:mm:ss";
+  public static final String DATE_FORMAT = "dd-MMM-yyyy hh:mm:ss";
 
   /** number of header lines */
   public static final int HEADER_COUNT = 1;
@@ -37,7 +37,7 @@ public final class EbamDataLogger extends DataLogger {
    * @param config logger configuration
    * @throws LoggerException when there are no tables configured
    */
-  public EbamDataLogger(ConfigFile config) throws LoggerException {
+  public EbamDataLogger(final ConfigFile config) throws LoggerException {
     super(config, HEADER_COUNT);
   }
 
@@ -47,14 +47,15 @@ public final class EbamDataLogger extends DataLogger {
    * @param dataFile eBAM data file to be polled
    * @return String suitable for SimpleDateFormat
    */
-  public String getFilePattern(DataFile dataFile) {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("'" + pathRoot + "/" + name + "/'");
-    sb.append(filePathFormat.toPattern());
-    sb.append("'/" + name + "-" + dataFile.toString() + "'");
-    sb.append(fileSuffixFormat.toPattern());
-
-    final String filename = sb.toString().replace('/', File.separatorChar);
+  public String getFilePattern(final DataFile dataFile) {
+    // final StringBuilder sb = new StringBuilder();
+    // sb.append("'" + pathRoot + "/" + name + "/'");
+    // sb.append(filePathFormat.toPattern());
+    // sb.append("'/" + name + "-" + dataFile.toString() + "'");
+    // sb.append(fileSuffixFormat.toPattern());
+    String filename = String.format("'%s/%s/'%s'/%s-%s'%s", pathRoot, name,
+        filePathFormat.toPattern(), name, dataFile.toString(), fileSuffixFormat.toPattern());
+    filename = filename.replace('/', File.separatorChar);
     return filename;
   }
 
@@ -66,8 +67,8 @@ public final class EbamDataLogger extends DataLogger {
    * @return the Date found
    * @throws ParseException when format cannot be parsed
    */
-  protected Date parseDate(CSVRecord record) throws ParseException {
-    String dateString = record.get(DATE_COLUMN);
+  protected Date parseDate(final CSVRecord record) throws ParseException {
+    final String dateString = record.get(DATE_COLUMN);
 
     return dateFormat.parse(dateString);
   }

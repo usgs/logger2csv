@@ -22,16 +22,16 @@ public class LoggerException extends Exception {
    * 
    * @param message Helpful information on cause of trouble
    */
-  public LoggerException(String message) {
+  public LoggerException(final String message) {
     super(message);
   }
 
   /**
    * Exception-wrapping constructor.
    * 
-   * @param e exception to wrap
+   * @param exception exception to wrap
    */
-  public LoggerException(Exception e) {
-    super(e);
+  public LoggerException(final Exception exception) {
+    super(exception);
   }
 }

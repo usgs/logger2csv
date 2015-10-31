@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A class to write CSV data to a file.
@@ -44,16 +45,16 @@ public class FileDataWriter {
    * @param fileNamePattern Pattern parsed by SimpleDateFormat to create filenames
    *
    */
-  public FileDataWriter(CSVFormat csvFormat, String fileNamePattern) {
+  public FileDataWriter(final CSVFormat csvFormat, final String fileNamePattern) {
     headers = new ArrayList<CSVRecord>();
     this.csvFormat = csvFormat;
-    this.fileNamePattern = new SimpleDateFormat(fileNamePattern);
+    this.fileNamePattern = new SimpleDateFormat(fileNamePattern, Locale.ENGLISH);
   }
 
   /**
    * @param earliestTime Data before this time will not be written.
    */
-  public final void setEarliestTime(long earliestTime) {
+  public final void setEarliestTime(final long earliestTime) {
     this.earliestTime = earliestTime;
   }
 
@@ -63,7 +64,7 @@ public class FileDataWriter {
    *
    * @param header header row
    */
-  public final void addHeader(CSVRecord header) {
+  public final void addHeader(final CSVRecord header) {
     headers.add(header);
   }
 
@@ -72,7 +73,7 @@ public class FileDataWriter {
    *
    * @param headerList List of header rows to add
    */
-  public final void addHeaders(List<CSVRecord> headerList) {
+  public final void addHeaders(final List<CSVRecord> headerList) {
     headers.addAll(headerList);
   }
 
@@ -82,7 +83,7 @@ public class FileDataWriter {
    * @param records records to write
    * @throws IOException file cannot be accessed
    */
-  public final void write(Iterator<LoggerRecord> records) throws IOException {
+  public final void write(final Iterator<LoggerRecord> records) throws IOException {
     File workingFile = null;
     CSVPrinter printer = null;
 
@@ -115,7 +116,7 @@ public class FileDataWriter {
 
   }
 
-  private void close(Closeable open) {
+  private void close(final Closeable open) {
     try {
       open.close();
     } catch (final IOException ignore) {
@@ -123,7 +124,7 @@ public class FileDataWriter {
   }
 
 
-  private CSVPrinter getPrinter(File file) throws IOException {
+  private CSVPrinter getPrinter(final File file) throws IOException {
     CSVPrinter printer;
 
     if (file.exists()) {

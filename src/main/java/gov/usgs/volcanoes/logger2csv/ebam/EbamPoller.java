@@ -35,7 +35,7 @@ public final class EbamPoller implements Poller {
    * 
    * @param logger The DataLogger to poll
    */
-  public EbamPoller(EbamDataLogger logger) {
+  public EbamPoller(final EbamDataLogger logger) {
     this.logger = logger;
   }
 
@@ -52,37 +52,37 @@ public final class EbamPoller implements Poller {
     }
   }
 
-  private int findLastRecordNum(DataFile dataFile) throws PollerException {
-    FileDataReader fileReader = new FileDataReader(logger);
-    CSVRecord lastRecord = fileReader.findLastRecord(logger.getFilePattern(dataFile));
+  private int findLastRecordNum(final DataFile dataFile) throws PollerException {
+    final FileDataReader fileReader = new FileDataReader(logger);
+    final CSVRecord lastRecord = fileReader.findLastRecord(logger.getFilePattern(dataFile));
     if (lastRecord == null) {
       LOGGER.debug("No recent data file was found.");
       return -1;
     } else {
-      int recordNumIdx = lastRecord.size() - 1;
+      final int recordNumIdx = lastRecord.size() - 1;
       LOGGER.debug("Most recent record num is {}", lastRecord.get(recordNumIdx));
       return Integer.parseInt(lastRecord.get(recordNumIdx));
     }
   }
 
-  private void updateFile(DataFile dataFile) throws PollerException {
-    EventLoopGroup group = new NioEventLoopGroup();
+  private void updateFile(final DataFile dataFile) throws PollerException {
+    final EventLoopGroup group = new NioEventLoopGroup();
     try {
-      Bootstrap b = new Bootstrap();
-      int recordIndex = findLastRecordNum(dataFile);
-      ChannelHandler handler = new EbamClientInitializer(logger, dataFile, recordIndex);
-      b.group(group).channel(NioSocketChannel.class).handler(handler);
+      final Bootstrap bStrap = new Bootstrap();
+      final int recordIndex = findLastRecordNum(dataFile);
+      final ChannelHandler handler = new EbamClientInitializer(logger, dataFile, recordIndex);
+      bStrap.group(group).channel(NioSocketChannel.class).handler(handler);
 
-      Channel ch;
+      Channel chan;
       try {
-        ch = b.connect(logger.address, logger.port).sync().channel();
+        chan = bStrap.connect(logger.address, logger.port).sync().channel();
       } catch (InterruptedException e) {
         throw new PollerException(e);
       }
 
       LOGGER.debug("connected to {}.", logger.name);
       try {
-        ch.closeFuture().sync();
+        chan.closeFuture().sync();
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

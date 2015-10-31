@@ -37,15 +37,15 @@ public final class PollerFactory {
    * @return an appropriate initialized Poller
    * @throws PollerException when Poller cannot be created
    */
-  public static Poller getPoller(ConfigFile config) throws PollerException {
-    Poller poller = null;
+  public static Poller getPoller(final ConfigFile config) throws PollerException {
     LoggerType type;
     try {
       type = LoggerType.valueOf(config.getString("type").toUpperCase());
     } catch (IllegalArgumentException e) {
-      throw new PollerException("Cannot find logger type.");
+      throw new PollerException(e);
     }
 
+    Poller poller;
     switch (type) {
       case CAMPBELL:
         try {

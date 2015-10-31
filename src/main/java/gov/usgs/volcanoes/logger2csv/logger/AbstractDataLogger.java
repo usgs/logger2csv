@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -26,7 +27,7 @@ import java.util.TimeZone;
  *         Universal public domain dedication.
  *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
-public abstract class DataLogger {
+public abstract class AbstractDataLogger {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
   /** Default pattern for file paths. */
@@ -83,7 +84,7 @@ public abstract class DataLogger {
    * @param headerCount Number of header rows
    * @throws LoggerException when logger
    */
-  public DataLogger(ConfigFile config, int headerCount) throws LoggerException {
+  public AbstractDataLogger(final ConfigFile config, final int headerCount) throws LoggerException {
     this.headerCount = headerCount;
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
@@ -100,13 +101,13 @@ public abstract class DataLogger {
     backfill = config.getInt("backfill", DEFAULT_BACKFILL);
     pathRoot = config.getString("pathRoot", DEFAULT_PATH_ROOT);
 
-    String path = config.getString("filePathFormat", DEFAULT_FILE_PATH_FORMAT);
-    filePathFormat = new SimpleDateFormat(path);
+    final String path = config.getString("filePathFormat", DEFAULT_FILE_PATH_FORMAT);
+    filePathFormat = new SimpleDateFormat(path, Locale.ENGLISH);
 
-    String suffix = config.getString("fileSuffixFormat", DEFAULT_FILE_SUFFIX_FORMAT);
-    fileSuffixFormat = new SimpleDateFormat(suffix);
+    final String suffix = config.getString("fileSuffixFormat", DEFAULT_FILE_SUFFIX_FORMAT);
+    fileSuffixFormat = new SimpleDateFormat(suffix, Locale.ENGLISH);
 
-    dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+    dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT, Locale.ENGLISH);
 
     try {
       csvFormat = config.getObject("csvFormat", new CsvFormatParser());
@@ -114,7 +115,7 @@ public abstract class DataLogger {
       throw new LoggerException(e);
     }
 
-    String csvDateFormatString = config.getString("csvDateFormat", dateFormat.toPattern());
-    csvDateFormat = new SimpleDateFormat(csvDateFormatString);
+    final String csvDateFormatString = config.getString("csvDateFormat", dateFormat.toPattern());
+    csvDateFormat = new SimpleDateFormat(csvDateFormatString, Locale.ENGLISH);
   }
 }

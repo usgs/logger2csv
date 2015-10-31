@@ -33,7 +33,7 @@ public class LoggerRecord {
    * @param date Time in ms as returned by Date.getTime()
    * @param record My CSVRecord
    */
-  public LoggerRecord(long date, CSVRecord record) {
+  public LoggerRecord(final long date, final CSVRecord record) {
     this.date = date;
     this.record = record;
   }
@@ -47,10 +47,10 @@ public class LoggerRecord {
    * @return A newly constructed LoggerRecord
    * @throws ParseException when date cannot be parsed
    */
-  public static LoggerRecord fromCSVRecord(CSVRecord record, SimpleDateFormat dateFormat,
-      int dateIndex) throws ParseException {
-    String dateString = record.get(dateIndex);
-    long date = dateFormat.parse(dateString).getTime();
+  public static LoggerRecord fromCSVRecord(final CSVRecord record, final SimpleDateFormat dateFormat,
+      final int dateIndex) throws ParseException {
+    final String dateString = record.get(dateIndex);
+    final long date = dateFormat.parse(dateString).getTime();
 
     return new LoggerRecord(date, record);
   }
@@ -64,14 +64,14 @@ public class LoggerRecord {
    * @return A newly constructed list of loggerRecords
    * @throws ParseException when any of the CSVRecords contain an unparsable date field
    */
-  public static List<LoggerRecord> fromCSVList(ListIterator<CSVRecord> recordList,
-      SimpleDateFormat dateFormat, int dateIndex) throws ParseException {
-    List<LoggerRecord> loggerRecords = new ArrayList<LoggerRecord>();
+  public static List<LoggerRecord> fromCSVList(final ListIterator<CSVRecord> recordList,
+      final SimpleDateFormat dateFormat, final int dateIndex) throws ParseException {
+    final List<LoggerRecord> loggerRecords = new ArrayList<LoggerRecord>();
 
     while (recordList.hasNext()) {
-      CSVRecord record = recordList.next();
-      String dateString = record.get(dateIndex);
-      long date = dateFormat.parse(dateString).getTime();
+      final CSVRecord record = recordList.next();
+      final String dateString = record.get(dateIndex);
+      final long date = dateFormat.parse(dateString).getTime();
       loggerRecords.add(new LoggerRecord(date, record));
     }
 
