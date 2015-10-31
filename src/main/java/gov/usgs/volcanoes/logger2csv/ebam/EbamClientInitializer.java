@@ -16,6 +16,12 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.CharsetUtil;
 
+/**
+ * Inializer for connection to eBAM.
+ * 
+ * @author Tom Parker
+ *
+ */
 public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
 
 
@@ -23,6 +29,13 @@ public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
   private final DataFile dataFile;
   private final int recordIndex;
 
+  /**
+   * Constructor.
+   * 
+   * @param logger My datalogger
+   * @param dataFile The data file to poll
+   * @param recordIndex The most recent record on disk, or -1 if none are found.
+   */
   public EbamClientInitializer(EbamDataLogger logger, DataFile dataFile, int recordIndex) {
     this.logger = logger;
     this.dataFile = dataFile;

@@ -15,14 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.PipedWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ListIterator;
 
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.ReadTimeoutException;
@@ -40,17 +38,22 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
 
   private EbamDataLogger logger;
   private DataFile dataFile;
-  private CSVParser parser;
-  private PipedWriter writer;
   private int recordIndex = -1;
   private int headersFound = 0;
-  StringBuffer records;
+  private StringBuffer records;
 
+  /**
+   * Constructor.
+   * 
+   * @param logger The eBAM I'm polling
+   * @param dataFile The eBAM data file I'm polling
+   * @param recordIndex The most recent record index already retrieved
+   * @throws IOException then communication fails.
+   */
   public EbamHandler(EbamDataLogger logger, DataFile dataFile, int recordIndex) throws IOException {
     this.logger = logger;
     this.dataFile = dataFile;
     this.recordIndex = recordIndex;
-    writer = new PipedWriter();
     records = new StringBuffer();
   }
 

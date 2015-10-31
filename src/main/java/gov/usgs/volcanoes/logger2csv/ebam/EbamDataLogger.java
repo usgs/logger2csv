@@ -14,8 +14,6 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A class to hold configuration and utility methods for a single data logger.
@@ -46,9 +44,7 @@ public final class EbamDataLogger extends DataLogger {
   /**
    * Return a filename pattern suitable for passing to SimpleDateFormat.
    * 
-   * @param dataFile
-   * 
-   * @param table logger table
+   * @param dataFile eBAM data file to be polled
    * @return String suitable for SimpleDateFormat
    */
   public String getFilePattern(DataFile dataFile) {
