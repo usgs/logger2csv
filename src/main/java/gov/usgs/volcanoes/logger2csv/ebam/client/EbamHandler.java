@@ -3,7 +3,7 @@
  * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
-package gov.usgs.volcanoes.logger2csv.ebam;
+package gov.usgs.volcanoes.logger2csv.ebam.client;
 
 import gov.usgs.volcanoes.logger2csv.FileDataWriter;
 import gov.usgs.volcanoes.logger2csv.logger.LoggerRecord;

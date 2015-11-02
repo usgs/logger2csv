@@ -3,7 +3,7 @@
  * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
 
-package gov.usgs.volcanoes.logger2csv.ebam;
+package gov.usgs.volcanoes.logger2csv.ebam.client;
 
 import java.io.IOException;
 
@@ -24,12 +24,6 @@ import io.netty.util.CharsetUtil;
  */
 public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
 
-  private static final int READ_TIMEOUT = 30;
-
-  private final EbamDataLogger logger;
-  private final DataFile dataFile;
-  private final int recordIndex;
-
   /**
    * Constructor.
    * 
@@ -37,11 +31,8 @@ public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
    * @param dataFile The data file to poll
    * @param recordIndex The most recent record on disk, or -1 if none are found.
    */
-  public EbamClientInitializer(final EbamDataLogger logger, final DataFile dataFile, final int recordIndex) {
+  public EbamClientInitializer() {
     super();
-    this.logger = logger;
-    this.dataFile = dataFile;
-    this.recordIndex = recordIndex;
   }
 
   @Override
@@ -51,10 +42,11 @@ public class EbamClientInitializer extends ChannelInitializer<SocketChannel> {
     // Decoders
     pipeline.addLast(new LineBasedFrameDecoder(1024, true, true));
     pipeline.addLast(new StringDecoder(CharsetUtil.US_ASCII));
-    pipeline.addLast("readTimeoutHandler", new ReadTimeoutHandler(READ_TIMEOUT));
-    pipeline.addLast(new EbamHandler(logger, dataFile, recordIndex));
+    pipeline.addLast(new EbamEscapeDecoder());
+    pipeline.addLast(new EbamHandler());
 
     // Encoders
+    pipeline.addLast(new EbamEscapeEncoder());
     pipeline.addLast(new StringEncoder());
   }
 }
