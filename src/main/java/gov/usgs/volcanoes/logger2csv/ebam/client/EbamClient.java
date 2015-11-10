@@ -1,49 +1,73 @@
-/*
- * I waive copyright and related rights in the this work worldwide through the CC0 1.0 Universal
- * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
- */
-
 package gov.usgs.volcanoes.logger2csv.ebam.client;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.CharsetUtil;
+
 /**
- * eBAM client.
+ * A simple ebam "escape" command client.
  * 
- * TODO: everything
- * 
- * @author Tom Parker
+ * Adapted from the Netty is Action echo client.
  *
+ * @author Tom Parker
  */
 public class EbamClient {
+  private static final char ESC = 0x1b;
 
-//  private static final char ESC = 0x1b;
-//
-//  public static void main(String[] args) throws Exception {
-    //
-    // EventLoopGroup group = new NioEventLoopGroup();
-    // try {
-    // Bootstrap b = new Bootstrap();
-    // b.group(group).channel(NioSocketChannel.class).handler(new EbamClientInitializer());
-    //
-    //
-    // Channel ch = b.connect(args[0], Integer.valueOf(args[1])).sync().channel();
-    //
-    // System.err.println("connected");
-    //
-    // ChannelFuture lastWriteFuture = null;
-    //
-    //
-    //// lastWriteFuture = ch.writeAndFlush(ESC + "RF2 R\r\n");
-    // lastWriteFuture = ch.writeAndFlush(ESC + "PF2 413\r\n");
-    // lastWriteFuture.sync();
-    //
-    // Thread.sleep(10000);
-    // // If user typed the 'bye' command, wait until the server closes
-    // // the connection.
-    // ch.closeFuture().sync();
-    //
-    // } finally
-    // {
-    // group.shutdownGracefully();
-    // }
-//  }
+  public static void main(String[] args) throws Exception {
+    if (args.length != 2) {
+      System.err.println("Usage: " + EbamClient.class.getSimpleName() + " <host> <port>");
+      return;
+    }
+
+    final String host = args[0];
+    final int port = Integer.parseInt(args[1]);
+
+    EventLoopGroup group = new NioEventLoopGroup();
+    try {
+      Bootstrap b = new Bootstrap();
+      b.group(group).channel(NioSocketChannel.class)
+          .remoteAddress(new InetSocketAddress(host, port))
+          .handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+              ch.pipeline().addLast(new LineBasedFrameDecoder(1024, true, true));
+              ch.pipeline().addLast(new StringDecoder(CharsetUtil.US_ASCII));
+              ch.pipeline().addLast(new EbamClientInboundHandler());
+              ch.pipeline().addLast(new StringEncoder());
+            }
+          });
+
+      ChannelFuture f = b.connect().sync();
+
+
+      ChannelPipeline cp = f.channel().pipeline();
+      BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+      for (;;) {
+        String line = in.readLine();
+        if (line == null) {
+          break;
+        }
+
+        ChannelFuture cf = cp.writeAndFlush(ESC + line + "\r\n");
+        cf.awaitUninterruptibly();
+      }
+      f.channel().closeFuture().sync();
+    } finally {
+      group.shutdownGracefully().sync();
+    }
+  }
 }

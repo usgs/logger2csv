@@ -70,7 +70,7 @@ public final class EbamPoller implements Poller {
     try {
       final Bootstrap bStrap = new Bootstrap();
       final int recordIndex = findLastRecordNum(dataFile);
-      final ChannelHandler handler = new EbamClientInitializer(logger, dataFile, recordIndex);
+      final ChannelHandler handler = new EbamInitializer(logger, dataFile, recordIndex);
       bStrap.group(group).channel(NioSocketChannel.class).handler(handler);
 
       Channel chan;
