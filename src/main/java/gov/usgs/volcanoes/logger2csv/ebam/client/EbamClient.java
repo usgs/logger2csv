@@ -1,6 +1,10 @@
 package gov.usgs.volcanoes.logger2csv.ebam.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 
@@ -24,26 +28,37 @@ import io.netty.util.CharsetUtil;
  *
  * @author Tom Parker
  */
-public class EbamClient {
+public final class EbamClient {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EbamClient.class);
   private static final char ESC = 0x1b;
 
-  public static void main(String[] args) throws Exception {
+  // uninstantiable
+  private EbamClient() {}
+
+  /**
+   * E-BAM "escape command" client.
+   * 
+   * @param args <host> <port>
+   * @throws InterruptedException when connection cannot be established
+   * @throws IOException when commands cannot be read
+   */
+  public static void main(final String... args) throws InterruptedException, IOException  {
     if (args.length != 2) {
-      System.err.println("Usage: " + EbamClient.class.getSimpleName() + " <host> <port>");
+      LOGGER.error("Usage: " + EbamClient.class.getSimpleName() + " <host> <port>");
       return;
     }
 
     final String host = args[0];
     final int port = Integer.parseInt(args[1]);
 
-    EventLoopGroup group = new NioEventLoopGroup();
+    final EventLoopGroup group = new NioEventLoopGroup();
     try {
-      Bootstrap b = new Bootstrap();
-      b.group(group).channel(NioSocketChannel.class)
+      final Bootstrap bootS = new Bootstrap();
+      bootS.group(group).channel(NioSocketChannel.class)
           .remoteAddress(new InetSocketAddress(host, port))
           .handler(new ChannelInitializer<SocketChannel>() {
             @Override
-            public void initChannel(SocketChannel ch) throws Exception {
+            public void initChannel(final SocketChannel ch) {
               ch.pipeline().addLast(new LineBasedFrameDecoder(1024, true, true));
               ch.pipeline().addLast(new StringDecoder(CharsetUtil.US_ASCII));
               ch.pipeline().addLast(new EbamClientInboundHandler());
@@ -51,21 +66,21 @@ public class EbamClient {
             }
           });
 
-      ChannelFuture f = b.connect().sync();
-
-
-      ChannelPipeline cp = f.channel().pipeline();
-      BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+      final ChannelFuture connectF = bootS.connect().sync();
+      final ChannelPipeline chanP = connectF.channel().pipeline();
+      
+      final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
       for (;;) {
-        String line = in.readLine();
+        final String line = input.readLine();
         if (line == null) {
           break;
         }
 
-        ChannelFuture cf = cp.writeAndFlush(ESC + line + "\r\n");
-        cf.awaitUninterruptibly();
+        final ChannelFuture commandF = chanP.writeAndFlush(ESC + line + "\r\n");
+        commandF.awaitUninterruptibly();
       }
-      f.channel().closeFuture().sync();
+      
+      connectF.channel().closeFuture().sync();
     } finally {
       group.shutdownGracefully().sync();
     }

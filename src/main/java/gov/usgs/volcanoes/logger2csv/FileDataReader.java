@@ -5,7 +5,7 @@
 
 package gov.usgs.volcanoes.logger2csv;
 
-import gov.usgs.volcanoes.logger2csv.logger.AbstractDataLogger;
+import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
 import gov.usgs.volcanoes.logger2csv.poller.PollerException;
 
 import org.apache.commons.csv.CSVParser;
@@ -30,14 +30,14 @@ public class FileDataReader {
 
   private static final long DAY_TO_MS = 24 * 60 * 60 * 1000;
 
-  private final AbstractDataLogger logger;
+  private final DataLogger logger;
 
   /**
    * Constructor.
    * 
    * @param logger my data logger
    */
-  public FileDataReader(final AbstractDataLogger logger) {
+  public FileDataReader(final DataLogger logger) {
     this.logger = logger;
   }
 
@@ -79,6 +79,7 @@ public class FileDataReader {
     return record;
   }
 
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   private File findRecentFile(final String fileNamePattern) {
     final SimpleDateFormat dateFormat = new SimpleDateFormat(fileNamePattern, Locale.ENGLISH);
 

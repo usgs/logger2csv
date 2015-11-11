@@ -92,7 +92,7 @@ public class Logger2csv {
     }
   }
 
-  private static Logger2csvArgs getArgs(final String[] argsArray) {
+  private static Logger2csvArgs getArgs(final String... argsArray) {
     Logger2csvArgs args = null;
     // Parse the command line
     try {
@@ -120,7 +120,7 @@ public class Logger2csv {
    *
    * @param args Command line arguments
    */
-  public static void main(final String[] args) {
+  public static void main(final String... args) {
     // Parse command line
     final Logger2csvArgs cmdLineArgs = getArgs(args);
     if (cmdLineArgs == null || !cmdLineArgs.runnable) {

@@ -64,6 +64,7 @@ public class LoggerRecord {
    * @return A newly constructed list of loggerRecords
    * @throws ParseException when any of the CSVRecords contain an unparsable date field
    */
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   public static List<LoggerRecord> fromCSVList(final ListIterator<CSVRecord> recordList,
       final SimpleDateFormat dateFormat, final int dateIndex) throws ParseException {
     final List<LoggerRecord> loggerRecords = new ArrayList<LoggerRecord>();

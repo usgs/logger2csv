@@ -6,7 +6,7 @@
 package gov.usgs.volcanoes.logger2csv.ebam;
 
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
-import gov.usgs.volcanoes.logger2csv.logger.AbstractDataLogger;
+import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
 import gov.usgs.volcanoes.logger2csv.logger.LoggerException;
 
 import org.apache.commons.csv.CSVRecord;
@@ -20,7 +20,7 @@ import java.util.Date;
  *
  * @author Tom Parker
  */
-public final class EbamDataLogger extends AbstractDataLogger {
+public final class EbamDataLogger extends DataLogger {
 
   /** column index of date field */
   public static final int DATE_COLUMN = 0;

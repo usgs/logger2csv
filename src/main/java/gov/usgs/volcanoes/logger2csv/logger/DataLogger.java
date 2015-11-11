@@ -27,7 +27,7 @@ import java.util.TimeZone;
  *         Universal public domain dedication.
  *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
  */
-public abstract class AbstractDataLogger {
+public class DataLogger {
   private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
 
   /** Default pattern for file paths. */
@@ -84,7 +84,7 @@ public abstract class AbstractDataLogger {
    * @param headerCount Number of header rows
    * @throws LoggerException when logger
    */
-  public AbstractDataLogger(final ConfigFile config, final int headerCount) throws LoggerException {
+  protected DataLogger(final ConfigFile config, final int headerCount) throws LoggerException {
     this.headerCount = headerCount;
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 

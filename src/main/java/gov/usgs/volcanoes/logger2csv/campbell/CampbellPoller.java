@@ -135,6 +135,7 @@ public final class CampbellPoller implements Poller {
   }
 
   // TODO: use of iterator introduces side effects. Find a better way.
+  @SuppressWarnings("PMD.PrematureDeclaration")
   private void updateTable(final String table) throws PollerException {
     final int lastRecordNum = findLastRecordNum(table);
     final ListIterator<CSVRecord> results = retrieveNewData(table, lastRecordNum);
@@ -144,7 +145,6 @@ public final class CampbellPoller implements Poller {
       return;
     }
 
-    // 
     final List<CSVRecord> headers = extractHeaders(results);
 
     if (!results.hasNext()) {

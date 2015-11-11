@@ -21,10 +21,11 @@ public class EbamClientInboundHandler extends SimpleChannelInboundHandler<String
 
 
   @Override
-  public void channelActive(ChannelHandlerContext ctx) {
+  public void channelActive(final ChannelHandlerContext ctx) {
     LOGGER.info("connected.");
   }
 
+  @SuppressWarnings("PMD.SystemPrintln")
   protected void channelRead0(final ChannelHandlerContext ctx, final String msgIn)
       throws IOException {
     System.out.println(msgIn.replace(ESC, '~'));

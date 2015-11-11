@@ -83,6 +83,7 @@ public class FileDataWriter {
    * @param records records to write
    * @throws IOException file cannot be accessed
    */
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   public final void write(final Iterator<LoggerRecord> records) throws IOException {
     File workingFile = null;
     CSVPrinter printer = null;
@@ -94,6 +95,8 @@ public class FileDataWriter {
         continue;
 
       File thisFile = null;
+      
+      
       thisFile = new File(fileNamePattern.format(new Date(record.date)));
       LOGGER.debug("working file: {}", thisFile);
 
@@ -116,11 +119,12 @@ public class FileDataWriter {
 
   }
 
+
+  @SuppressWarnings("PMD.EmptyCatchBlock")
   private void close(final Closeable open) {
     try {
       open.close();
-    } catch (final IOException ignore) {
-    }
+    } catch (final IOException ignore) {}
   }
 
 

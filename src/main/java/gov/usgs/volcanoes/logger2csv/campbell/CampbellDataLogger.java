@@ -6,7 +6,7 @@
 package gov.usgs.volcanoes.logger2csv.campbell;
 
 import gov.usgs.volcanoes.core.configfile.ConfigFile;
-import gov.usgs.volcanoes.logger2csv.logger.AbstractDataLogger;
+import gov.usgs.volcanoes.logger2csv.logger.DataLogger;
 import gov.usgs.volcanoes.logger2csv.logger.LoggerException;
 
 import org.apache.commons.csv.CSVRecord;
@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Tom Parker
  */
-public final class CampbellDataLogger extends AbstractDataLogger {
+public final class CampbellDataLogger extends DataLogger {
 
   /** column index of date field */
   public static final int DATE_COLUMN = 0;
