@@ -36,6 +36,9 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
   private static final char ESC = 0x1b;
   private static final long DAY_TO_MS = 24 * 60 * 60 * 1000;
   private static final int PREAMBLE_LENGTH = 5;
+  
+  // Taken from Pg. 18 of E-BAM Operation manual - 3.3 Using Main E-BAM Menu System 
+  private static final int MAX_RECORD_INDEX = 4369;
 
   private final EbamDataLogger logger;
   private final DataFile dataFile;
@@ -66,7 +69,7 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
       final String msg = ESC + "RF" + dataFile.value + " R\r\n";
       ctx.writeAndFlush(Unpooled.copiedBuffer(msg, CharsetUtil.UTF_8));
     } else {
-      final String msg = String.format("PF%s %d", dataFile.value, recordIndex + 1);
+      final String msg = String.format("PF%s %d", dataFile.value, recordIndex);
       ctx.writeAndFlush(Unpooled.copiedBuffer(ESC + msg + "\r\n", CharsetUtil.UTF_8));
     }
   }
@@ -78,8 +81,7 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
 
     // Record index "RF3 R 32 L 32 X0750"
     if (recordIndex == -1 && msgIn.matches(".*RF. R \\d+.*")) {
-      recordIndex = Integer.parseInt(msgIn.split("\\s+")[2]);
-//      recordIndex -= 15;
+      recordIndex = Integer.parseInt(msgIn.split("\\s+")[2]) - 1;
     recordIndex = 1;
       LOGGER.debug("Found record index {}", recordIndex);
 
@@ -94,7 +96,8 @@ public class EbamHandler extends SimpleChannelInboundHandler<String> {
         records.append(msgIn).append(",Index\n");
         headersFound++;
       } else {
-        records.append(msgIn + "," + recordIndex++ + "\n");
+        records.append(msgIn + "," + recordIndex % MAX_RECORD_INDEX + "\n");
+        recordIndex++;
       }
     }
   }
