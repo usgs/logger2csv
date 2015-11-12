@@ -87,7 +87,7 @@ public class FileDataReader {
     final long ancientMs = timeMs - logger.backfill * DAY_TO_MS;
 
     while (timeMs > ancientMs) {
-      final String fileName = dateFormat.format(timeMs);
+      final String fileName = dateFormat.format(timeMs) + ".csv";
       final File file = new File(fileName);
       if (file.exists()) {
         return file;

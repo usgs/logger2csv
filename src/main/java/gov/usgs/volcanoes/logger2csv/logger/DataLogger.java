@@ -34,7 +34,7 @@ public class DataLogger {
   public static final String DEFAULT_FILE_PATH_FORMAT = "yyyy/MM";
 
   /** Default patther for file suffixes, including file extension. */
-  public static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd'.csv'";
+  public static final String DEFAULT_FILE_SUFFIX_FORMAT = "-yyyyMMdd";
 
   /** Default root of file paths. */
   public static final String DEFAULT_PATH_ROOT = "data";

@@ -4,7 +4,7 @@
   <groupId>gov.usgs.volcanoes</groupId>
   <artifactId>logger2csv</artifactId>
   <name>Logger2CSV</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <url>http://volcanoes.usgs.gov/software</url>
   <issueManagement>
     <system>GitHub</system>

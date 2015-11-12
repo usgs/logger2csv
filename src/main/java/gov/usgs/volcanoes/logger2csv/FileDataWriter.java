@@ -97,7 +97,7 @@ public class FileDataWriter {
       File thisFile = null;
       
       
-      thisFile = new File(fileNamePattern.format(new Date(record.date)));
+      thisFile = new File(fileNamePattern.format(new Date(record.date)) + ".csv");
       LOGGER.debug("working file: {}", thisFile);
 
       if (!thisFile.equals(workingFile)) {
