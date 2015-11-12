@@ -1,146 +1,144 @@
+/*
+ * I waive copyright and related rights in the this work worldwide through the CC0 1.0 Universal
+ * public domain dedication. https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ */
+
 package gov.usgs.volcanoes.logger2csv;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import gov.usgs.volcanoes.core.args.ArgumentException;
+import gov.usgs.volcanoes.core.configfile.ConfigFile;
+import gov.usgs.volcanoes.logger2csv.poller.Poller;
+import gov.usgs.volcanoes.logger2csv.poller.PollerException;
+import gov.usgs.volcanoes.logger2csv.poller.PollerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.usgs.volcanoes.util.configFile.ConfigFile;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An application to write CSV files from a collection of remote data loggers.
- * 
+ *
  * @author Tom Parker
- * 
- *         I waive copyright and related rights in the this work worldwide
- *         through the CC0 1.0 Universal public domain dedication.
- *         https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ *
  */
 public class Logger2csv {
 
-    private static final long M_TO_S = 60;
-    private static final long DAY_TO_S = 24 * 60 * M_TO_S;
-    private static final long M_TO_MS = 60 * 1000;
+  /** Default config file name */
+  public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
 
-    public static final String DEFAULT_CONFIG_FILENAME = "logger2csv.config";
-    public static final long DEFAULT_INTERVAL_M = M_TO_S;
+  /** Default polling interval */
+  public static final int DEFAULT_INTERVAL_M = 60;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Logger2csv.class);
+  private static final long M_TO_MS = 60 * 1000;
 
-    private ConfigFile configFile;
-    private List<DataLogger> loggers;
-    private int interval;
+  private final ConfigFile configFile;
+  private final int interval;
+  private final List<Poller> pollers;
 
-    public Logger2csv(ConfigFile configFile) {
-        LOGGER.info("Launching Logger2csv ({})", Logger2csvVersion.VERSION_STRING);
+  /**
+   * Constructor.
+   *
+   * @param configFile app configuration
+   */
+  public Logger2csv(final ConfigFile configFile) {
+    LOGGER.info("Launching Logger2csv ({})", Version.VERSION_STRING);
 
-        this.configFile = configFile;
-        this.interval = configFile.getInt("interval", (int) DEFAULT_INTERVAL_M);
-        loggers = getLoggers();
+    this.configFile = configFile;
+    interval = configFile.getInt("interval", DEFAULT_INTERVAL_M);
+    pollers = getPollers();
+  }
+
+  private List<Poller> getPollers() {
+    final List<Poller> pollers = new ArrayList<Poller>();
+
+    for (final String station : configFile.getList("station")) {
+      final ConfigFile config = configFile.getSubConfig(station, true);
+      config.put("name", station);
+
+      try {
+        pollers.add(PollerFactory.getPoller(config));
+      } catch (final PollerException e) {
+        LOGGER.error(e.getMessage());
+      }
+    }
+    return pollers;
+  }
+
+  /**
+   * Poll each configured logger with a fixed rest interval. Poll times will slip since rest
+   * interval is fixed.
+   */
+  private void pollAllCountinous() {
+    while (true) {
+      pollAllOnce();
+      try {
+        Thread.sleep(interval * M_TO_MS);
+      } catch (final InterruptedException ignore) {
+      }
+    }
+  }
+
+  /**
+   * Poll each configured logger once
+   */
+  public void pollAllOnce() {
+    LOGGER.debug("Polling all loggers");
+    for (final Poller p : pollers) {
+      p.updateFiles();
+    }
+  }
+
+  private static Logger2csvArgs getArgs(final String... argsArray) {
+    Logger2csvArgs args = null;
+    // Parse the command line
+    try {
+      args = new Logger2csvArgs(argsArray);
+    } catch (final ArgumentException e) {
+      LOGGER.error("Cannot parse command line. (" + e + ")");
     }
 
-    private List<DataLogger> getLoggers() {
-        List<DataLogger> loggers = new ArrayList<DataLogger>();
+    return args;
+  }
 
-        for (String station : configFile.getList("station")) {
-            ConfigFile config = configFile.getSubConfig(station, true);
-            config.put("name", station);
-
-            try {
-                loggers.add(new DataLogger(config));
-            } catch (UnknownHostException e) {
-                LOGGER.error("Cannot find host \"{}\". I'll skip it this time.", config.getString("address"));
-            } catch (IOException e) {
-                LOGGER.error(e.getMessage());
-            }
-        }
-        return loggers;
+  private static ConfigFile getConfigFile(final String configFileName) {
+    ConfigFile conf = null;
+    try {
+      conf = new ConfigFile(configFileName);
+    } catch (final FileNotFoundException e) {
+      LOGGER.error("Can't parse config file " + configFileName + ". Try using the --help flag.");
     }
 
-    public void poll(DataLogger logger, String table) {
-        FileDataReader fileReader = new FileDataReader(logger, table);
-        WebDataReader webReader = new WebDataReader(logger, table);
-        FileDataWriter fileWriter = new FileDataWriter(logger, table);
-        LOGGER.debug("Polling {}.{}", logger.name, table);
+    return conf;
+  }
 
-        int lastRecord;
-        try {
-            lastRecord = fileReader.findLastRecord();
-        } catch (IOException e1) {
-            LOGGER.error("Cannot parse file on disk for {}.{}, I'll skip it this time. File corrupt?", logger.name,
-                    table);
-            return;
-        }
-
-        Iterator<String[]> results;
-        try {
-            if (lastRecord > 0)
-                results = webReader.since_record(lastRecord);
-            else
-                results = webReader.backFill((int) (logger.backfill * DAY_TO_S));
-        } catch (IOException e) {
-            LOGGER.error("Cannot read new records from {}.{}, I'll skip it this time.", logger.name, table);
-            return;
-        }
-
-        try {
-            fileWriter.write(results, lastRecord);
-        } catch (ParseException e) {
-            LOGGER.error("Cannot parse logger response. Skipping {}", logger.name);
-            return;
-        } catch (IOException e) {
-            LOGGER.error("Cannot write to datafile for {}.{}.", logger.name, table);
-            return;
-        }
-
+  /**
+   * Retrieve data from a list of data loggers.
+   *
+   * @param args Command line arguments
+   */
+  public static void main(final String... args) {
+    // Parse command line
+    final Logger2csvArgs cmdLineArgs = getArgs(args);
+    if (cmdLineArgs == null || !cmdLineArgs.runnable) {
+      System.exit(1);
     }
 
-    public void pollAllOnce() {
-        for (DataLogger l : loggers) {
-            Iterator<String> it = l.getTableIterator();
-            while (it.hasNext()) {
-                String table = it.next();
-                poll(l, table);
-            }
-        }
+    // Parse config file
+    final ConfigFile conf = getConfigFile(cmdLineArgs.configFileName);
+    if (conf == null) {
+      System.exit(1);
     }
 
-    private void pollAllCountinous() {
-        while (true) {
-            pollAllOnce();
-            try {
-                Thread.sleep(interval * M_TO_MS);
-            } catch (InterruptedException ignore) {
-            }
-        }
+    // Get data
+    final Logger2csv logger2csv = new Logger2csv(conf);
+    if (cmdLineArgs.persistent) {
+      logger2csv.pollAllCountinous();
+    } else {
+      logger2csv.pollAllOnce();
     }
-
-    public static void main(String[] args) {
-        Logger2csvArgs config = null;
-        try {
-            config = new Logger2csvArgs(args);
-        } catch (Exception e) {
-            LOGGER.error("Cannot parse command line. (" + e.getLocalizedMessage() + ")");
-        }
-
-        if (config != null) {
-            try {
-                ConfigFile cf = new ConfigFile(config.configFileName);
-                Logger2csv logger2csv = new Logger2csv(cf);
-                if (config.persistent)
-                    logger2csv.pollAllCountinous();
-                else
-                    logger2csv.pollAllOnce();
-            } catch (FileNotFoundException e) {
-                LOGGER.warn("Can't parse config file " + config.configFileName + ". Try using the --help flag.");
-            }
-        }
-
-    }
+  }
 }
