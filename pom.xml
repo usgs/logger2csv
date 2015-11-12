@@ -12,14 +12,14 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.template.file>src/main/resources/Logger2csvVersion.java.template</version.template.file>
-		<version.file>src/main/java/gov/usgs/volcanoes/logger2csv/Logger2csvVersion.java</version.file>
+		<version.template.file>src/main/resources/Version.java.template</version.template.file>
+		<version.file>src/main/java/gov/usgs/volcanoes/logger2csv/Version.java</version.file>
 	</properties>
 
 	<licenses>
 		<license>
 			<name>CC0 1.0 Universal</name>
-			<url>http://www.martiansoftware.com/jsap/license.html</url>
+			<url>http://creativecommons.org/publicdomain/zero/1.0/</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -379,14 +379,19 @@
 			<version>[20141113,)</version>
 		</dependency>
 		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>3.5</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.volcanoes</groupId>
-			<artifactId>util</artifactId>
-			<version>[1.1.3,)</version>
+			<artifactId>volcano-core</artifactId>
+			<version>[1.2.0-SNAPSHOT,)</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.31.Final</version>
 		</dependency>
 	</dependencies>
 </project>

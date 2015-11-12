@@ -1,0 +1,25 @@
+/*
+ * I waive copyright and related rights in the this work worldwide
+ * through the CC0 1.0 Universal public domain dedication.
+ * https://creativecommons.org/publicdomain/zero/1.0/legalcode
+ */
+
+package gov.usgs.volcanoes.logger2csv;
+
+/**
+ * Provide programatic access to build info.
+ * 
+ * @author Tom Parker
+ *
+ */
+public final class Version {
+
+  /** Time build was created. */
+    public static final String BUILD_TIME="@buildtime@";
+
+    /** Version number taken from pom.xml at build time. */
+    public static final String POM_VERSION="@pomversion@";
+
+    /** Friendly string combining version and date info. */
+	public static final String VERSION_STRING = "Version: " + POM_VERSION + " Built: " + BUILD_TIME;
+}
