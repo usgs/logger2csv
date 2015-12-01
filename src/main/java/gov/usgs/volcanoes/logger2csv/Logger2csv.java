@@ -105,13 +105,11 @@ public class Logger2csv {
   }
 
   private static ConfigFile getConfigFile(final String configFileName) {
-    ConfigFile conf = null;
-    try {
-      conf = new ConfigFile(configFileName);
-    } catch (final FileNotFoundException e) {
+    ConfigFile conf = new ConfigFile(configFileName);
+    if (!conf.wasSuccessfullyRead()) {
       LOGGER.error("Can't parse config file " + configFileName + ". Try using the --help flag.");
+      System.exit(1);
     }
-
     return conf;
   }
 
